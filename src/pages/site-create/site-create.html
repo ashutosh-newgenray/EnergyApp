@@ -1,0 +1,204 @@
+<!--
+  Generated template for the SiteCreatePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar color="secondary">
+    <ion-title>Create Site</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="save()">
+        <ion-icon name="checkmark"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content padding>
+  <form [formGroup]="siteForm" (ngSubmit)="save()">
+    <ion-card>
+      <ion-card-header>
+        Basic Details
+      </ion-card-header>
+      <ion-card-content>
+          <ion-list>
+            <ion-item [class.invalid]="!siteForm.controls.client.valid && (clientChanged || submitAttempt)">
+              <ion-label floating>Associated With Client</ion-label>
+              <ion-select #client formControlName="client" (change)="elementChanged(client)">
+                <ion-option *ngFor="let client of clients" [value]="client.id" >{{client.name}}</ion-option>
+              </ion-select>
+            </ion-item>
+            <ion-item class="error-message" *ngIf="!siteForm.controls.client.valid  && (clientChanged || submitAttempt)">
+              <p>Please Select A Client.</p>
+            </ion-item>
+            <ion-item [class.invalid]="!siteForm.controls.site_name.valid && (site_nameChanged || submitAttempt)">
+              <ion-label floating>Site Name</ion-label>
+              <ion-input #site_name type="text" formControlName="site_name" (change)="elementChanged(site_name)"></ion-input>
+            </ion-item>
+            <ion-item class="error-message" *ngIf="!siteForm.controls.site_name.valid  && (site_nameChanged || submitAttempt)">
+              <p>Please Enter Site Name.</p>
+            </ion-item>
+            <ion-item [class.invalid]="!siteForm.controls.contact_person.valid && (contact_personChanged || submitAttempt)">
+                <ion-label floating>Contact Person</ion-label>
+                <ion-input #contact_person type="text" formControlName="contact_person" (change)="elementChanged(contact_person)"></ion-input>
+            </ion-item>
+            <ion-item class="error-message" *ngIf="!siteForm.controls.contact_person.valid  && (contact_personChanged || submitAttempt)">
+              <p>Please Enter Contact Person.</p>
+            </ion-item>
+            <ion-item [class.invalid]="!siteForm.controls.email.valid && (emailChanged || submitAttempt)">
+                <ion-label floating>Email</ion-label>
+                <ion-input #email type="email" formControlName="email" (change)="elementChanged(email)"></ion-input>
+            </ion-item>
+            <ion-item class="error-message" *ngIf="!siteForm.controls.email.valid  && (emailChanged || submitAttempt)">
+              <p>Please Enter a Valid Email.</p>
+            </ion-item>
+            <ion-item>
+              <ion-label floating>Mobile</ion-label>
+              <ion-input #mobile type="text" formControlName="mobile"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Landline</ion-label>
+                <ion-input #landline type="number" formControlName="landline"></ion-input>
+            </ion-item>
+          </ion-list>
+      </ion-card-content>
+    </ion-card>
+    <ion-card>
+      <ion-card-header>
+        Address
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label>Copy address from client</ion-label>
+            <ion-checkbox #copy_address formControlName="copy_address" [disabled]="siteForm.controls.client.value ? false : true" (ionChange)="copyAddress(copy_address)"></ion-checkbox>
+          </ion-item>
+          <ion-item [class.invalid]="!siteForm.controls.postcode.valid && (postcodeChanged || submitAttempt)">
+            <ion-label floating>Postcode</ion-label>
+            <ion-input #postcode type="text" formControlName="postcode" (change)="elementChanged(email)"></ion-input> 
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!siteForm.controls.postcode.valid  && (postcodeChanged || submitAttempt)">
+            <p>Please Enter Valid Post Code.</p>
+          </ion-item>
+          <ion-item [class.invalid]="!siteForm.controls.address_1.valid && (address_1Changed || submitAttempt)">
+            <ion-label floating>Address 1</ion-label>
+            <ion-input #address_1 type="text" formControlName="address_1" (change)="elementChanged(address_1)"></ion-input>
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!siteForm.controls.address_1.valid  && (address_1Changed || submitAttempt)">
+              <p>Please Enter Address 1.</p>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>Address 2</ion-label>
+            <ion-input #address_2 type="text" formControlName="address_2"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>City</ion-label>
+            <ion-input #city type="text" formControlName="city"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>Region</ion-label>
+            <ion-input #region type="text" formControlName="region"></ion-input>
+          </ion-item>
+          <ion-item [class.invalid]="!siteForm.controls.country.valid && (countryChanged || submitAttempt)">
+            <ion-label floating>Country</ion-label>
+            <ion-input #country type="text" formControlName="country" (change)="elementChanged(country)"></ion-input>
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!siteForm.controls.country.valid  && (countryChanged || submitAttempt)">
+            <p>Please Enter a Country.</p>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>Comments</ion-label>
+            <ion-input #comments type="text" formControlName="comments"></ion-input>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+    <ion-card>
+      <ion-card-header>
+        Existing Supplier Electric
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item [class.invalid]="!siteForm.controls.mpan_top_line.valid && (mpan_top_lineChanged || submitAttempt)">
+            <ion-label fixed>Mpan Top Line</ion-label>
+            <ion-input type="number" text-right #mpan_top_line formControlName="mpan_top_line" (change)="elementChanged(mpan_top_line)" max="8"></ion-input>
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!siteForm.controls.mpan_top_line.valid  && (mpan_top_lineChanged || submitAttempt)">
+            <p>The mpan top line field is required.</p>
+          </ion-item>
+          <ion-item [class.invalid]="!siteForm.controls.mpan_bottom_line.valid && (mpan_bottom_lineChanged || submitAttempt)">
+            <ion-label fixed>Mpan Bottom Line</ion-label>
+            <ion-input type="number" text-right text-right #mpan_bottom_line formControlName="mpan_bottom_line" (change)="elementChanged(mpan_bottom_line)" max="13"></ion-input>
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!siteForm.controls.mpan_bottom_line.valid  && (mpan_bottom_lineChanged || submitAttempt)">
+            <p>The mpan bottom line field is required.</p>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>Current Supplier</ion-label>
+            <ion-select #electric_supplier formControlName="electric_supplier">
+              <ion-option *ngFor="let electricSupplier of electricSuppliers" [value]="electricSupplier.id">{{electricSupplier.name}}</ion-option>
+            </ion-select>
+          </ion-item>
+          <ion-item [class.invalid]="!siteForm.controls.electric_contract_end_date.valid && (electric_contract_end_dateChanged || submitAttempt)">
+            <ion-label>Contract End Date</ion-label>
+            <ion-datetime #electric_contract_end_date formControlName="electric_contract_end_date" displayFormat="DD/MM/YYYY" (change)="elementChanged(electric_contract_end_date)"></ion-datetime>
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!siteForm.controls.electric_contract_end_date.valid  && (electric_contract_end_dateChanged || submitAttempt)">
+            <p>The Contract End Date is required.</p>
+          </ion-item>
+          <ion-item [class.invalid]="!siteForm.controls.electric_usages.valid && (electric_usagesChanged || submitAttempt)">
+            <ion-label fixed>Usages (KWh)</ion-label>
+            <ion-input type="text" text-right #electric_usages formControlName="electric_usages" (change)="elementChanged(electric_usages)"></ion-input>
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!siteForm.controls.electric_usages.valid  && (electric_usagesChanged || submitAttempt)">
+            <p>The Usages is required.</p>
+          </ion-item>
+          <ion-item>
+            <ion-label>Smart Meter Installed</ion-label>
+            <ion-checkbox #electric_smart_meter_installed formControlName="electric_smart_meter_installed"></ion-checkbox>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+    <ion-card>
+      <ion-card-header>
+        Existing Supplier Gas
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item [class.invalid]="!siteForm.controls.mpr.valid && (mprChanged || submitAttempt)">
+            <ion-label fixed>MPR</ion-label>
+            <ion-input type="number" text-right #mpr formControlName="mpr" (change)="elementChanged(mpr)" max="10"></ion-input>
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!siteForm.controls.mpr.valid  && (mprChanged || submitAttempt)">
+            <p>The mpr field is required.</p>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>Current Supplier</ion-label>
+            <ion-select #gas_supplier formControlName="gas_supplier">
+              <ion-option *ngFor="let gasSupplier of gasSuppliers" [value]="gasSupplier.id">{{gasSupplier.name}}</ion-option>
+            </ion-select>
+          </ion-item>
+          <ion-item [class.invalid]="!siteForm.controls.gas_contract_end_date.valid && (gas_contract_end_dateChanged || submitAttempt)">
+            <ion-label>Contract End Date</ion-label>
+            <ion-datetime #gas_contract_end_date formControlName="gas_contract_end_date" displayFormat="DD/MM/YYYY" (change)="elementChanged(gas_contract_end_date)"></ion-datetime>
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!siteForm.controls.gas_contract_end_date.valid  && (gas_contract_end_dateChanged || submitAttempt)">
+              <p>The Contract End Date is required.</p>
+          </ion-item>
+          <ion-item [class.invalid]="!siteForm.controls.gas_usages.valid && (gas_usagesChanged || submitAttempt)">
+            <ion-label fixed>Usages (KWh)</ion-label>
+            <ion-input type="text" text-right #gas_usages formControlName="gas_usages" (change)="elementChanged(gas_usages)"></ion-input>
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!siteForm.controls.gas_usages.valid  && (gas_usagesChanged || submitAttempt)">
+            <p>The Usage is required.</p>
+          </ion-item>
+          <ion-item>
+            <ion-label>Smart Meter Installed</ion-label>
+            <ion-checkbox #gas_smart_meter_installed formControlName="gas_smart_meter_installed"></ion-checkbox>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </form>
+</ion-content>

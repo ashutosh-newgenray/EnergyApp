@@ -1,0 +1,169 @@
+<!--
+  Generated template for the ClientDetailsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-title>{{clientDetails.client.name}}</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="uploadDocument()">
+        <ion-icon name="cloud-upload"></ion-icon>
+      </button>
+      <button ion-button icon-only (click)="save()">
+        <ion-icon name="checkmark"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content padding>
+  <form [formGroup]="clientForm" (ngSubmit)="save()">
+    <ion-card>
+      <ion-card-header>
+        Basic Details
+      </ion-card-header>
+      <ion-card-content>
+          <ion-list>
+            <ion-item [class.invalid]="!clientForm.controls.name.valid && (nameChanged || submitAttempt)">
+              <ion-label floating>Client Name</ion-label>
+              <ion-input #name type="text" formControlName="name" (change)="elementChanged(name)"></ion-input>
+            </ion-item>
+            <ion-item class="error-message" *ngIf="!clientForm.controls.name.valid  && (nameChanged || submitAttempt)">
+              <p>Please enter name.</p>
+            </ion-item>
+            <ion-item [class.invalid]="!clientForm.controls.uid.valid && (uidChanged || submitAttempt)">
+              <ion-label floating>Client Reference</ion-label>
+              <ion-input #uid type="text" formControlName="uid" (change)="elementChanged(uid)"></ion-input>
+            </ion-item>
+            <ion-item class="error-message" *ngIf="!clientForm.controls.uid.valid  && (uidChanged || submitAttempt)">
+              <p>Please enter UID.</p>
+            </ion-item>
+            <ion-item>
+              <ion-label floating>Company Status</ion-label>
+              <ion-select #company_status formControlName="company_status" >
+                <ion-option *ngFor="let company_status of company_statuses" [value]="company_status.key" >{{company_status.value}}</ion-option>
+              </ion-select>
+            </ion-item>
+            <ion-item [class.invalid]="!clientForm.controls.email.valid && (emailChanged || submitAttempt)">
+              <ion-label floating>Email</ion-label>
+              <ion-input #email type="text" formControlName="email" (change)="elementChanged(email)"></ion-input>
+            </ion-item>
+            <ion-item class="error-message" *ngIf="!clientForm.controls.email.valid  && (emailChanged || submitAttempt)">
+              <p>Please enter a valid email.</p>
+            </ion-item>
+            <ion-item>
+              <ion-label>Status</ion-label>
+              <ion-toggle #approved formControlName="approved" ></ion-toggle>
+            </ion-item>
+            <ion-item>
+              <ion-label>User Active</ion-label>
+              <ion-toggle #user_active formControlName="user_active" ></ion-toggle>
+            </ion-item>
+            <ion-item>
+              <ion-label floating>Logo</ion-label>
+            </ion-item>
+          </ion-list>
+          <ion-label style="display: inline-block;vertical-align: middle;width: 46%;">Logo</ion-label>
+          <ion-img (click)="takePicture()" width="150" height="150" [src]="logo" style="display: inline-block;vertical-align: middle;width: 50%;" alt="no image"></ion-img>
+      </ion-card-content>
+    </ion-card>
+    <ion-card>
+      <ion-card-header>
+        Address
+      </ion-card-header>
+      <ion-list>
+        <ion-item [class.invalid]="!clientForm.controls.address_1.valid && (address_1Changed || submitAttempt)">
+          <ion-label floating>Address 1</ion-label>
+          <ion-input type="text" #address_1 formControlName="address_1" (change)="elementChanged(address_1)"></ion-input>
+        </ion-item>
+        <ion-item class="error-message" *ngIf="!clientForm.controls.address_1.valid  && (address_1Changed || submitAttempt)">
+          <p>Please enter Address 1.</p>
+        </ion-item>
+        <ion-item>
+          <ion-label floating>Address 2</ion-label>
+          <ion-input type="text" #address_2 formControlName="address_2" ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label floating>City</ion-label>
+          <ion-input type="text" #city formControlName="city"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label floating>Region</ion-label>
+          <ion-input type="text" #region formControlName="region"></ion-input>
+        </ion-item>
+        <ion-item [class.invalid]="!clientForm.controls.postcode.valid && (postcodeChanged || submitAttempt)">
+          <ion-label floating>Postcode</ion-label>
+          <ion-input type="text" #postcode formControlName="postcode"  (change)="elementChanged(postcode)"></ion-input>
+        </ion-item>
+        <ion-item class="error-message" *ngIf="!clientForm.controls.postcode.valid  && (postcodeChanged || submitAttempt)">
+          <p>Please enter postcode.</p>
+        </ion-item>
+        <ion-item [class.invalid]="!clientForm.controls.country.valid && (countryChanged || submitAttempt)">
+          <ion-label floating>Country</ion-label>
+          <ion-input type="text" #country formControlName="country"  (change)="elementChanged(country)"></ion-input>
+        </ion-item>
+        <ion-item class="error-message" *ngIf="!clientForm.controls.country.valid  && (countryChanged || submitAttempt)">
+          <p>Please enter country.</p>
+        </ion-item>
+      </ion-list>
+    </ion-card>
+    <ion-card>
+      <ion-card-header>
+        Password
+      </ion-card-header>
+      <ion-list>
+        <ion-item>
+          <ion-label>Reset Password</ion-label>
+          <ion-toggle #resetPassword formControlName="resetPassword"></ion-toggle>
+        </ion-item>
+        <ion-item *ngIf="clientForm.controls.resetPassword.value" [class.invalid]="!clientForm.controls.passwordGroup.controls.password.valid && (passwordChanged || submitAttempt)" formGroupName="passwordGroup">
+          <ion-label floating>Password</ion-label>
+          <ion-input type="password" #password formControlName="password" (change)="elementChanged(password)" autocapitalize="off"></ion-input>
+        </ion-item>
+        <ion-item class="error-message" *ngIf="!clientForm.controls.passwordGroup.controls.password.valid  && (passwordChanged || submitAttempt)">
+          <p>Please enter password.</p>
+        </ion-item>
+        <ion-item *ngIf="clientForm.controls.resetPassword.value" [class.invalid]="!clientForm.controls.passwordGroup.controls.confirmPassword.valid && (confirmPasswordChanged || submitAttempt)" formGroupName="passwordGroup">
+          <ion-label floating>Confirm Password</ion-label>
+          <ion-input type="password" #confirmPassword formControlName="confirmPassword" (change)="elementChanged(confirmPassword)" autocapitalize="off"></ion-input>
+        </ion-item>
+        <ion-item class="error-message" *ngIf="clientForm.controls.passwordGroup.controls.confirmPassword.errors?.MatchPassword  && (confirmPasswordChanged || submitAttempt)">
+          <p>Confirm Password should match the Password.</p>
+        </ion-item>
+      </ion-list>
+    </ion-card>
+    <ion-card>
+      <ion-card-header>
+        Documents
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let docs of clientDetails.docs">
+            <h2>{{docs.file_name}}</h2>
+            <p>
+              {{(docs.type)?"Document Type:" + docs.type: ''}}<br/>
+              {{(docs.created_at)?"Created At:" + docs.created_at:''}}<br/>
+              {{(docs.authorized_at)? (docs.approved == 1)?"Approved":'Not Approved' :''}}<br/>
+              {{(docs.authorized_at)? (docs.approved == 1)?"Authorized By: " + docs.authorizedBy :'' :''}}<br/>
+              {{(docs.authorized_at)? " Authorized at " + docs.authorized_at : 'Waiting for Approval'}}
+            </p>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </form>
+  <ion-fab right bottom>
+    <button ion-fab color="primary"><ion-icon name="add"></ion-icon></button>
+    <ion-fab-list side="top">
+      <button ion-fab (click)="goToClientCreatePage()" >
+        <ion-icon name="ios-people"></ion-icon>
+        <ion-label>Create Client</ion-label>
+      </button>
+      <button ion-fab (click)="goToCreateSitePage()">
+        <ion-icon name="git-network"></ion-icon>
+        <ion-label>Create Site</ion-label>
+      </button>
+    </ion-fab-list>
+  </ion-fab>
+</ion-content>

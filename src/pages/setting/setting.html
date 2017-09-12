@@ -1,0 +1,52 @@
+<!--
+  Generated template for the SettingPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="secondary">
+    <ion-title>Setting</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="logout()">
+        <ion-icon name="log-out"></ion-icon>
+      </button>
+      <button ion-button icon-only (click)="save()">
+        <ion-icon name="checkmark"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content padding>
+  <form [formGroup]="settingForm" (ngSubmit)="save()" >
+    <ion-list>
+      <ion-item [class.invalid]="!settingForm.controls.name.valid && (nameChanged || submitAttempt)">
+        <ion-label floating>Name</ion-label>
+        <ion-input #name formControlName="name" type="text" (change)="elementChanged(name)"></ion-input>
+      </ion-item>
+      <ion-item [class.invalid]="!settingForm.controls.email.valid && (emailChanged || submitAttempt)">
+        <ion-label floating>Email</ion-label>
+        <ion-input #email formControlName="email" type="email" (change)="elementChanged(email)"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Reset Password</ion-label>
+        <ion-toggle #resetPassword formControlName="resetPassword"></ion-toggle>
+      </ion-item>
+      <ion-item *ngIf="settingForm.controls.resetPassword.value" [class.invalid]="!settingForm.controls.passwordGroup.controls.password.valid && (passwordChanged || submitAttempt)" formGroupName="passwordGroup">
+          <ion-label floating>Password</ion-label>
+          <ion-input type="password" #password formControlName="password" (change)="elementChanged(password)" autocapitalize="off"></ion-input>
+        </ion-item>
+        <ion-item class="error-message" *ngIf="!settingForm.controls.passwordGroup.controls.password.valid  && (passwordChanged || submitAttempt)">
+          <p>Please enter password.</p>
+        </ion-item>
+        <ion-item *ngIf="settingForm.controls.resetPassword.value" [class.invalid]="!settingForm.controls.passwordGroup.controls.confirmPassword.valid && (confirmPasswordChanged || submitAttempt)" formGroupName="passwordGroup">
+          <ion-label floating>Confirm Password</ion-label>
+          <ion-input type="password" #confirmPassword formControlName="confirmPassword" (change)="elementChanged(confirmPassword)" autocapitalize="off"></ion-input>
+        </ion-item>
+        <ion-item class="error-message" *ngIf="settingForm.controls.passwordGroup.controls.confirmPassword.errors?.MatchPassword  && (confirmPasswordChanged || submitAttempt)">
+          <p>Confirm Password should match the Password.</p>
+        </ion-item>
+    </ion-list>
+  </form>
+</ion-content>

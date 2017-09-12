@@ -1,0 +1,14 @@
+page-quote-details {
+    .details{
+        padding: 0;
+        .item-inner{padding: 0 !important}
+        .list-header-md, .list-header-ios{
+            margin-top: 0;
+            margin-bottom: 0;
+            background: #dedede;
+            color: black;
+        }
+        .heading .label-md, .heading .label-ios{font-size: 1.8rem;}
+        .label-md,.label-ios{margin: 0;}
+    }
+}

@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>
+      Dashboard
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="settings()">
+        <ion-icon name="settings"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content
+    pullingIcon="arrow-dropdown"
+    pullingText="Pull to refresh"
+    refreshingSpinner="circles"
+    refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-list>
+    <button ion-item (click)="goToClients()">
+      <ion-icon item-start name="people"></ion-icon>
+      Clients
+      <ion-badge item-end>{{totalClients}}</ion-badge>
+    </button>
+    <button ion-item (click)="goToSites()">
+      <ion-icon item-start name="git-network"></ion-icon>
+      Sites
+      <ion-badge item-end>{{totalSites}}</ion-badge>
+    </button>
+    <button ion-item (click)="goToQuotes()">
+      <ion-icon item-start name="send"></ion-icon>
+      Quotes
+      <ion-badge item-end>{{totalQuotes}}</ion-badge>
+    </button>
+  </ion-list>
+</ion-content>

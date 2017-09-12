@@ -1,0 +1,263 @@
+<!--
+  Generated template for the QuoteCreatePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="secondary">
+    <ion-title>Create Quote</ion-title>
+    <ion-buttons end *ngIf="step == 'select-supplier'">
+      <button ion-button icon-only (click)="openFiltersModal()">
+        <ion-icon name="funnel"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-buttons end *ngIf="step == 'generate-quote'">
+      <button ion-button icon-only (click)="generateFinal()">
+        <ion-icon name="checkmark"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <ion-segment [(ngModel)]="step">
+    <ion-segment-button value="select-site">Select <br/> Site</ion-segment-button>
+    <ion-segment-button value="provide-details" [disabled]="siteId ? false : true">Provide <br/> Details</ion-segment-button>
+    <ion-segment-button value="select-supplier" [disabled]="detailsValid ? false : true">Select <br/> Supplier</ion-segment-button>
+    <ion-segment-button value="generate-quote" [disabled]="supplierId ? false : true">Generate <br/> Quote</ion-segment-button>
+  </ion-segment>
+  <div [ngSwitch]="step">
+    <ion-searchbar *ngSwitchCase="'select-site'" (ionInput)="filterSites($event)"></ion-searchbar>
+    <ion-col *ngSwitchCase="'select-site'">
+      <button ion-item *ngFor="let site of sites" (click)="provideDetails('provide-details', site)"> 
+        <!--ion-avatar item-start *ngIf="site.logo;else no_image" >
+          <img src="{{site.logo}}">
+        </ion-avatar>
+        <ng-template #no_image>
+          <img src="assets/images/no_image_available.png" alt="no image"/>
+        </ng-template> -->
+        
+        <h2 style="white-space: normal;"><strong>Site Name</strong>: {{site.site_name}}</h2>
+        <h3 style="white-space: normal;"><strong>Contact Person</strong>: {{site.contact_person}}</h3>
+        <h4 style="white-space: normal;"><strong>Email</strong>: {{site.email}}</h4>
+        <h4 style="white-space: normal;" *ngIf="site.mobile"><strong>Mobile</strong>: {{site.mobile}}</h4>
+        <h4 style="white-space: normal;"><strong>Client Name</strong>: {{site.client_name}}</h4>
+        <p style="white-space: normal;"><strong>Address</strong>: {{site.address_1}}<span *ngIf="site.address_2">,{{site.address_2}}</span>,{{site.city}}, {{site.region}}, {{site.country}}, {{site.postcode}}</p>
+        <br/>
+        <div *ngIf="site.electric_supplier_id">
+          <ion-list>
+            <ion-list-header>
+              <ion-icon name="flash" ></ion-icon> ELECTRICITY
+            </ion-list-header>
+            <ion-item>
+              MPAN Top Line: 
+              <ion-badge item-end>{{site.mpan_top_line}}</ion-badge>
+            </ion-item>
+            <ion-item>
+              MPAN Bottom Line: 
+              <ion-badge item-end>{{site.mpan_bottom_line}}</ion-badge>
+            </ion-item>
+            <ion-item>
+              Usage: 
+              <ion-badge item-end>{{site.electric_usage}}</ion-badge>
+            </ion-item>
+            <ion-item>
+              End of Contract: 
+              <ion-badge item-end>{{site.electric_contract_end}}</ion-badge>
+            </ion-item>
+            <ion-item>
+              Smart Meter Installed: 
+              <ion-badge item-end>{{site.electric_smart_meter}}</ion-badge>
+            </ion-item>
+          </ion-list>
+        </div>
+        <br/>
+        <div *ngIf="site.gas_supplier_id">
+          <ion-list>
+            <ion-list-header>
+              <ion-icon name="flame"></ion-icon> GAS
+            </ion-list-header>
+            <ion-item>
+              MPR: 
+              <ion-badge item-end>{{site.mpr}}</ion-badge>
+            </ion-item>
+            <ion-item>
+              Usage: 
+              <ion-badge item-end>{{site.gas_usage}}</ion-badge>
+            </ion-item>
+            <ion-item>
+              End of Contract: 
+              <ion-badge item-end>{{site.contract_end_date}}</ion-badge>
+            </ion-item>
+            <ion-item>
+              Smart Meter Installed: 
+              <ion-badge item-end>{{site.gas_smart_meter}}</ion-badge>
+            </ion-item>
+          </ion-list>
+        </div>
+      </button>
+    </ion-col>
+    <ion-col *ngSwitchCase="'provide-details'">
+      <ion-card>
+        <ion-card-content>
+          <ion-list radio-group [(ngModel)]="quoteData.quoteType" (ionChange)="quoteTypeChanged()">
+            <ion-item>
+              <ion-label>Electricity Quote</ion-label>
+              <ion-radio value="ELECTRICITY"></ion-radio>
+            </ion-item>
+            <ion-item>
+              <ion-label>Gas Quote</ion-label>
+              <ion-radio value="GAS"></ion-radio>
+            </ion-item>
+          </ion-list>
+          <ion-list>
+            <ion-item>
+              <ion-label>Current Supplier</ion-label>
+              <ion-select [(ngModel)]="currentSupplier" (ionChange)="supplierChanged()">
+                <ion-option *ngFor="let supplier of suppliers" [value]="supplier">{{supplier.name}}</ion-option>
+              </ion-select>
+            </ion-item>
+            <ion-item *ngIf="currentSupplier == '0'">
+              <ion-label floating>Supplier Name</ion-label>
+              <ion-input type="text" [(ngModel)]="quoteData.current_supplier_name"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label>Region</ion-label>
+              <ion-select [(ngModel)]="quoteData.current_region" *ngIf="quoteData.quoteType=='GAS'">
+                <ion-option  *ngFor="let region of gas_regions" [value]="region.key">{{region.value}}</ion-option>
+              </ion-select>
+              <ion-select [(ngModel)]="quoteData.current_region" *ngIf="quoteData.quoteType=='ELECTRICITY'">
+                <ion-option *ngFor="let region of electric_regions" [value]="region.id">{{region.name}}</ion-option>
+              </ion-select>
+            </ion-item>
+            <ion-item *ngIf="quoteData.meterType.day">
+              <ion-label floating>Usage Day (KWh)</ion-label>
+              <ion-input type="number" [(ngModel)]="quoteData.usages.day"></ion-input>
+            </ion-item>
+            <ion-item *ngIf="quoteData.quoteType == 'ELECTRICITY' && quoteData.meterType.night">
+              <ion-label floating>Usage Night (KWh)</ion-label>
+              <ion-input type="number" [(ngModel)]="quoteData.usages.night"></ion-input>
+            </ion-item>
+            <ion-item *ngIf="quoteData.quoteType == 'ELECTRICITY' && quoteData.meterType.weekend">
+              <ion-label floating>Weekend Other (KWh)</ion-label>
+              <ion-input type="number" [(ngModel)]="quoteData.usages.weekend"></ion-input>
+            </ion-item>
+            <ion-item *ngIf="quoteData.quoteType == 'ELECTRICITY' && quoteData.meterType.other">
+              <ion-label floating>Usage Other (KWh)</ion-label>
+              <ion-input type="number" [(ngModel)]="quoteData.usages.other"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label>Renewal Date</ion-label>
+              <ion-datetime displayFormat="DD/MM/YYYY" [(ngModel)]="quoteData.renewal_date"></ion-datetime>
+            </ion-item>
+            <ion-item *ngIf="quoteData.meterType.day">
+              <ion-label floating>Day Rate (p/KWh)</ion-label>
+              <ion-input type="number" [(ngModel)]="quoteData.unit_rate.day"></ion-input>
+            </ion-item>
+            <ion-item *ngIf="quoteData.quoteType == 'ELECTRICITY' && quoteData.meterType.night">
+              <ion-label floating>Night Rate (p/KWh)</ion-label>
+              <ion-input type="number" [(ngModel)]="quoteData.unit_rate.night"></ion-input>
+            </ion-item>
+            <ion-item *ngIf="quoteData.quoteType == 'ELECTRICITY' && quoteData.meterType.weekend">
+              <ion-label floating>Weekend Rate (p/KWh)</ion-label>
+              <ion-input type="number" [(ngModel)]="quoteData.unit_rate.weekend"></ion-input>
+            </ion-item>
+            <ion-item *ngIf="quoteData.quoteType == 'ELECTRICITY' && quoteData.meterType.other">
+              <ion-label floating>Other Rate (p/KWh)</ion-label>
+              <ion-input type="number" [(ngModel)]="quoteData.unit_rate.other"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label floating>Standing Charge (p/KWh)</ion-label>
+              <ion-input type="number" [(ngModel)]="quoteData.standing_charge"></ion-input>
+            </ion-item>
+          </ion-list>
+          <ion-item>
+            <ion-label>Cost Per Year</ion-label>
+            <ion-badge item-end>{{clientYearlyCost}}</ion-badge>
+          </ion-item>
+          <div padding-top>
+            <button ion-button full (click)="showSuppliers()">Show Suppliers</button>
+          </div>
+          
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+    <ion-col *ngSwitchCase="'select-supplier'">
+      <button ion-item *ngFor="let item of data" class="suppliers" (click)="generate(item)">
+        <div>
+          <ion-list>
+            <ion-list-header class="heading">
+              {{item.name}}
+            </ion-list-header>
+            <ion-item>
+              <strong>Term:</strong> {{item.contract_duration}}
+            </ion-item>
+            <ion-item>
+              <strong>Standing:</strong> {{item.standing_charge}}p/day
+            </ion-item>
+            <ion-item>
+              <strong>Unit Rate:</strong> {{(item.unit_rate)?item.unit_rate:'N/A'}}p/KWh
+            </ion-item>
+            <ion-item>
+              <strong>Annual Cost:</strong> £{{item.cost_per_year}}
+            </ion-item>
+            <ion-item>
+              <strong>Difference:</strong> £{{item.difference}} ({{item.percentage_diff}}%)
+            </ion-item>
+          </ion-list>
+        </div>
+      </button>
+    </ion-col>
+    <ion-col class="verify" *ngSwitchCase="'generate-quote'">
+      <div>
+        <ion-list>
+          <ion-list-header class="heading">Selected Supplier Details</ion-list-header>
+          <ion-item><strong>Name:</strong> {{selectedSupplier.name}}</ion-item>
+          <ion-item><strong>Type:</strong> {{selectedSupplier.type}}</ion-item>
+          <ion-item><strong>Meter:</strong> {{selectedSupplier.meter}}</ion-item>
+          <ion-item><strong>Contract Duration:</strong> {{selectedSupplier.contract_duration}}</ion-item>
+          <ion-item *ngIf="quoteData.quoteType != 'GAS'"><strong>DNO:</strong> {{dnoStr(selectedSupplier.dno)}}</ion-item>
+          <ion-item *ngIf="quoteData.quoteType == 'GAS'"><strong>LDZ:</strong> {{gas_regions[selectedSupplier.ldz]}}</ion-item>
+          <ion-item><strong>Date:</strong> {{selectedSupplier.date}}</ion-item>
+          <ion-item><strong>Standing Charge:</strong> {{selectedSupplier.standing_charge}}</ion-item>
+          <ion-item><strong>Unit Charge:</strong> {{selectedSupplier.unit_rate}}</ion-item>
+          <ion-item><strong>Day Charge:</strong> {{selectedSupplier.day}}</ion-item>
+          <ion-item *ngIf="quoteData.quoteType != 'GAS'"><strong>Night Charge:</strong> {{selectedSupplier.night}}</ion-item>
+          <ion-item *ngIf="quoteData.quoteType != 'GAS'" ><strong>Evening &amp; Weekend Charge:</strong> {{selectedSupplier["evening_&_night"]}}</ion-item>
+        </ion-list>
+        <ion-list>
+          <ion-list-header class="heading">Current Supplier And Usage Details</ion-list-header>
+          <ion-item><strong>Supplier Type:</strong> {{quoteData.quoteType}}</ion-item>
+          <ion-item><strong>Supplier Name:</strong> {{quoteData.current_supplier_name}}</ion-item>
+          <ion-item *ngIf="quoteData.quoteType != 'GAS'"><strong>DNO:</strong> {{dnoStr(quoteData.current_region)}}</ion-item>
+          <ion-item *ngIf="quoteData.quoteType == 'GAS'"><strong>LDZ:</strong> quoteData.current_region ({{gas_regions[quoteData.current_region]}})</ion-item>
+          <ion-item *ngIf="quoteData.meterType.day"><strong>Day Usages:</strong> {{quoteData.usages.day}}</ion-item>
+          <ion-item *ngIf="quoteData.meterType.night"><strong>Night Usages:</strong> {{quoteData.usages.night}}</ion-item>
+          <ion-item *ngIf="quoteData.meterType.weekend"><strong>Weekend Usages:</strong> {{quoteData.usages.weekend}}</ion-item>
+          <ion-item *ngIf="quoteData.meterType.other"><strong>Other Usages:</strong> {{quoteData.usages.other}}</ion-item>
+          <ion-item><strong>Renewal Date:</strong> {{quoteData.renewal_date}}</ion-item>
+          <ion-item><strong>Yearly Usage:</strong> {{quoteData.yearly_usages}}</ion-item>
+          <ion-item><strong>Yearly Cost:</strong> {{quoteData.yearly_cost}}</ion-item>
+        </ion-list>
+        <ion-list>
+          <ion-list-header class="heading">Site Details</ion-list-header>
+          <ion-item><strong>Client Name:</strong> {{selectedSite.client_name}}</ion-item>
+          <ion-item><strong>Site Name:</strong> {{selectedSite.site_name}}</ion-item>
+          <ion-item><strong>Contact Person:</strong> {{selectedSite.contact_person}}</ion-item>
+          <ion-item><strong>Email:</strong> {{selectedSite.email}}</ion-item>
+          <ion-item><strong>Mobile:</strong> {{selectedSite.mobile}}</ion-item>
+          <ion-item><strong>Address:</strong> {{selectedSite.address_1}}, {{selectedSite.address_2}}</ion-item>
+          <ion-item><strong>City:</strong> {{selectedSite.city}}</ion-item>
+          <ion-item><strong>Postcode:</strong> {{selectedSite.postcode}}</ion-item>
+          <ion-item><strong>Country:</strong> {{selectedSite.country}}</ion-item>
+          <ion-item><strong>MPAN top line:</strong> {{selectedSite.mpan_top_line}}</ion-item>
+          <ion-item><strong>MPAN Bottom Line:</strong> {{selectedSite.mpan_bottom_line}}</ion-item>
+          <ion-item><strong>MPR:</strong> {{selectedSite.mpr}}</ion-item>
+        </ion-list>
+      </div>
+    </ion-col>
+  </div>
+</ion-content>

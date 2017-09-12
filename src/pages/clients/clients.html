@@ -1,0 +1,53 @@
+<!--
+  Generated template for the ClientsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar color="secondary">
+    <ion-title>Clients</ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content padding>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content
+    pullingIcon="arrow-dropdown"
+    pullingText="Pull to refresh"
+    refreshingSpinner="circles"
+    refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-searchbar *ngIf="clients.length" (ionInput)="filterClients($event)"></ion-searchbar>
+  <ion-list *ngIf="clients.length">
+    <button ion-item *ngFor="let client of clients" (click)="openClientDetailPage(client.id)"> 
+      <ion-avatar item-start *ngIf="client.logo;else no_image" >
+        <img [src]="getImageUrl(client.logo)">
+      </ion-avatar>
+      <ng-template #no_image>
+        <img src="assets/images/no_image_available.png" alt="no image"/>
+      </ng-template>
+      <h2 style="white-space: normal;">{{client.name}}</h2>
+      <h3 style="white-space: normal;">{{client.address_1}}</h3>
+      <p style="white-space: normal;">{{client.city}},{{client.country}},{{client.postcode}}</p>
+    </button>
+  </ion-list>
+  <ion-card *ngIf="!clients.length && sychedData">
+    <ion-card-content>
+      Sorry, We didn't find any Clients.
+      <br>
+      <br> Click Add icon at the bottom right of the screen to create a client.
+    </ion-card-content>
+  </ion-card>
+  <ion-fab right bottom>
+    <button ion-fab color="primary"><ion-icon name="add"></ion-icon></button>
+    <ion-fab-list side="top">
+      <button ion-fab (click)="goToClientCreatePage()" ><ion-icon name="people"></ion-icon></button>
+      <button ion-fab (click)="goToCreateSitePage()"><ion-icon name="git-network"></ion-icon></button>
+    </ion-fab-list>
+  </ion-fab> 
+
+  <!--ion-infinite-scroll (ionInfinite)="loadMore($event)">
+   <ion-infinite-scroll-content></ion-infinite-scroll-content>
+ </ion-infinite-scroll-->
+</ion-content>

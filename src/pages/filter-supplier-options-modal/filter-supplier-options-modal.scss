@@ -1,0 +1,22 @@
+page-filter-supplier-options-modal {
+    .list-md{
+        margin-bottom: 1rem;
+    }
+    .list-header-md{
+        margin-top: 0;
+        margin-bottom: 0;
+        background: #dedede;
+        color: black;
+    }
+    .list-md + ion-list ion-list-header{
+        margin-top: 0;
+        margin-bottom: 0;
+        background: #dedede;
+        color: black;
+    }
+    .fixed-bottom{
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+    }
+}

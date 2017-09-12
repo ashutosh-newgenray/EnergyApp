@@ -1,0 +1,14 @@
+page-quotes {
+    .quotes{
+        padding: 0;
+        .item-inner{padding: 0 !important}
+        .list-header-md{
+            margin-top: 0;
+            margin-bottom: 0;
+            background: #dedede;
+            color: black;
+        }
+        .heading .label-md{font-size: 1.8rem;}
+        .label-md{margin: 0;}
+    }
+}

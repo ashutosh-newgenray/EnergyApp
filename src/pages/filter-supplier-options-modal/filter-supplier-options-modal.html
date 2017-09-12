@@ -1,0 +1,48 @@
+<!--
+  Generated template for the FilterSupplierOptionsModalPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar color="secondary">
+    <ion-title>Filter Options</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content padding>
+  <ion-list>
+    <ion-list-header>Uplift <ion-badge item-end>{{upliftDecimal}}</ion-badge></ion-list-header>
+    <ion-item>
+      <ion-range min="0" max="100" step="10" [(ngModel)]="uplift" (ionChange)="rangeUpdated()" >
+        <ion-label range-left>0</ion-label>
+        <ion-label range-right>1</ion-label>
+      </ion-range>
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-list-header>Duration</ion-list-header>
+    <ion-item *ngFor="let duration of durations">
+      <ion-label>{{duration.contract_duration}}</ion-label>
+      <ion-checkbox [(ngModel)]="duration.checked"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-list-header>Supplier</ion-list-header>
+    <ion-item *ngFor="let supplier of suppliers">
+      <ion-label>{{supplier.name}}</ion-label>
+      <ion-checkbox [(ngModel)]="supplier.checked"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+  
+</ion-content>
+<ion-footer>
+  <div class="fixed-bottom">
+    <button ion-button full (click)="applyFilter()">Apply Filter</button>
+  </div>
+  
+</ion-footer>
