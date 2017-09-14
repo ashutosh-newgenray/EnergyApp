@@ -27,20 +27,23 @@ export class QuoteCreatePage {
   gas_regions:any = [];
   meterTypes:any;
   sortKey:string = 'percentage_diff';
+  supercommission: any;
+  role:any;
 
   quoteData:any = {
     quoteType: 'ELECTRICITY',
     current_supplier: 0,
     current_supplier_name: '',
     current_region: null,
-    usages: {day: null, night: null,weekend: null,other: null}, 
+    usages: {unit:null, day: null, night: null,weekend: null,other: null}, 
     renewal_date: '',
-    unit_rate:{day:null,night: null,weekend: null,other: null},
+    unit_rate:{unit:null, day:null,night: null,weekend: null,other: null},
     standing_charge:null,
     yearly_cost:null,
     yearly_usages: null,
     uplift: 0,
     meterType:{
+      unit:0,
       day:0,
       night:0,
       weekend:0,
@@ -98,6 +101,8 @@ export class QuoteCreatePage {
         this.SuppliersData = response.json().suppliers;
         this.commission = response.json().commission;
         this.meterTypes = response.json().meterTypes;
+        this.supercommission = response.json().superCommission;
+        this.role = response.json().roleName;
         this.quoteTypeChanged();
         this.loading.dismiss();
       },
@@ -179,8 +184,8 @@ export class QuoteCreatePage {
       }
 
       this.currentSupplier = (this.quoteData.quoteType == 'ELECTRICITY') ? elec_supplier : gas_supplier;
-
-      if(this.currentSupplier){
+      console.log(JSON.stringify(this.currentSupplier));
+      if(this.currentSupplier.length){
         this.quoteData.current_supplier = this.currentSupplier[0];
         this.quoteData.current_supplier_name = this.currentSupplier[0].name;
       }else{
@@ -206,8 +211,8 @@ export class QuoteCreatePage {
 
   supplierChanged(){
     if(this.currentSupplier != 0){
-      this.quoteData.current_supplier = this.currentSupplier[0];
-      this.quoteData.current_supplier_name = this.currentSupplier[0].name;
+      this.quoteData.current_supplier = this.currentSupplier;
+      this.quoteData.current_supplier_name = this.currentSupplier.name;
     }else{
       this.quoteData.current_supplier = 0;
       this.quoteData.current_supplier_name = '';
@@ -241,77 +246,43 @@ export class QuoteCreatePage {
   }
 
   showSuppliers(){
+    let msg = '';
     if(this.quoteData.quoteType == 'ELECTRICITY'){
-      if(this.quoteData.current_supplier && this.quoteData.renewal_date && this.quoteData.usages.day && this.quoteData.usages.night){
-        this.quoteSupppliers();
-        this.step = "select-supplier";
-        this.content.scrollToTop();
-      }else{
-        let msg = 'Please provide ';
-        
-        if(!this.quoteData.current_supplier){
-          msg += 'Current Supplier';
-        }
-        
-        if(this.quoteData.renewal_date == ''){
-          if(msg == 'Please provide '){
-            msg += 'Renewal Date';
-          }else{
-            msg += ', Renewal Date';
-          }
-        }
-        
-        if(!this.quoteData.usages.day){
-          if(msg == 'Please provide '){
-            msg += 'Usage Day Details';
-          }else{
-            msg += ', Usage Day Details';
-          }
-        }
-        
-        if(!this.quoteData.usages.night){
-          if(msg == 'Please provide '){
-            msg += 'Usage Night Details';
-          }else{
-            msg += ', Usage Night Details';
-          }
-        }
-        this.toast.create({
-            message: msg,
-            duration: 3000
-        }).present();
+      if(this.quoteData.meterType.unit && !this.quoteData.usages.unit){
+          msg += "Provide Electricity Usage.<br>"
+      }
+      if(this.quoteData.meterType.day && !this.quoteData.usages.day){
+          msg += "Provide Electricity Day Usage.<br>"
+      }
+      if(this.quoteData.meterType.night  && !this.quoteData.usages.night){
+          msg += "Provide Electricity Night Usage.<br>"
+      }
+      if(this.quoteData.meterType.weekend  && !this.quoteData.usages.weekend){
+          msg += "Provide Electricity Weekend Usage.<br>"
       }
     }else{
-      if(this.quoteData.current_supplier && this.quoteData.renewal_date && this.quoteData.usages.day){
-        this.detailsValid = true;
-        this.quoteSupppliers();
-        this.step = "select-supplier";
-        this.content.scrollToTop();
-      }else{
-        let msg = 'Please provide ';
-        if(!this.quoteData.current_supplier){
-          msg += 'Current Supplier';
-        }
-        if(!this.quoteData.renewal_date){
-          if(msg == 'Please provide '){
-            msg += 'Renewal Date';
-          }else{
-            msg += ', Renewal Date';
-          }
-        }
-        if(!this.quoteData.usages.day){
-          if(msg == 'Please provide '){
-            msg += 'Usage Day Details';
-          }else{
-            msg += ', Usage Day Details';
-          }
-        }
-        this.toast.create({
-            message: msg,
-            duration: 3000
-        }).present();
+      if(!this.quoteData.usages.day){
+        msg += "Provide Gas Usage details.<br>"
       }
     }
+    if(!this.quoteData.current_supplier){
+      msg += "Select Current Supplier Supplier<br>"
+    }
+
+    if(!this.quoteData.renewal_date){
+      msg += "Provide Renewal Date<br>"
+    }
+    if(msg.length > 0){
+      this.toast.create({
+        message: msg,
+        duration: 3000
+      }).present();
+      return false;
+    }
+    this.detailsValid = true;
+    this.quoteSupppliers();
+    this.step = "select-supplier";
+    this.content.scrollToTop();
   }
 
   quoteSupppliers(){
@@ -366,29 +337,40 @@ export class QuoteCreatePage {
     let day = parseFloat(item.day);
     let night = parseFloat(item.night);
     let evening = parseFloat(item['evening_&_weekend']);
+    let other = parseFloat(item.other);
+
+    if(this.quoteData.meterType.unit && this.quoteData.usages.unit){
+      let usage = parseFloat(this.quoteData.usages.unit);
+      usages += usage;
+      charges += usage * unit;
+    }
     
     if(this.quoteData.usages.day && this.quoteData.meterType.day){
       let usage = parseFloat(this.quoteData.usages.day);
       usages += usage;
-      charges += day ? usage * day : usage * unit;
+      //charges += day ? usage * day : usage * unit;
+      charges += usage * day;
     }
 
     if(this.quoteData.usages.night && this.quoteData.meterType.night){
         let usage = parseFloat(this.quoteData.usages.night);
         usages += usage;
-        charges += night ? usage * night : usage * unit;
+        /*charges += night ? usage * night : usage * unit;*/
+        charges += usage * night;
     }
 
     if(this.quoteData.usages.weekend && this.quoteData.meterType.weekend){
       let usage = parseFloat(this.quoteData.usages.weekend);
       usages += usage;
-      charges += evening ? usage * evening : usage * unit;
+      /*charges += evening ? usage * evening : usage * unit;*/
+      charges += usage * evening;
     }
 
     if(this.quoteData.usages.other && this.quoteData.meterType.other){
         let usage = parseFloat(this.quoteData.usages.other);
         usages += usage;
-        charges += evening ? usage * evening : usage * unit;
+        /*charges += evening ? usage * evening : usage * unit;*/
+        charges += usage * other;
     }
 
     if(charges == 0){
@@ -418,38 +400,56 @@ export class QuoteCreatePage {
   }
 
   getCommission(item){
-    let charges = 0;
-    let usages = 0;
-    let unit = parseFloat(item.unit_rate);
-    let day = parseFloat(item.day);
-    let night = parseFloat(item.night);
-    let evening = parseFloat(item['evening_&_weekend']);
-
-    if(this.quoteData.usages.day){
-        let usage = parseFloat(this.quoteData.usages.day);
-        usages += usage;
-        charges += day ? usage * day : usage * unit;
+    let charges = parseFloat(this.getCostPerYear(item));
+    let commission = 0;
+    if(this.role == 'AGENT'){
+      let agencyCommission = (charges * this.uplift * parseFloat(this.supercommission)) / (100);
+      commission = (agencyCommission * this.uplift * parseFloat(this.commission)) / (100);
+    }else{
+      commission = (charges * this.uplift * parseFloat(this.commission)) / (100);
     }
-    if(this.quoteData.usages.night){
-        let usage = parseFloat(this.quoteData.usages.night);
-        usages += usage;
-        charges += night ? usage * night : usage * unit;
-    }
-    if(this.quoteData.usages.other){
-        let usage = parseFloat(this.quoteData.usages.other);
-        usages += usage;
-        charges += evening ? usage * evening : usage * unit;
-    }
-
-    let commission = (charges * this.uplift * parseFloat(this.commission)) / (10000);
     return commission.toFixed(2);
   }
 
   get clientYearlyCost() {
-    let usages = ((this.quoteData.unit_rate.day * this.quoteData.usages.day) + (this.quoteData.unit_rate.night * this.quoteData.usages.night) +
-        (this.quoteData.unit_rate.other * this.quoteData.usages.other))/100;
+    let charges = 0;
+    let usages = 0;
+    if(this.quoteData.meterType.unit && this.quoteData.usages.unit){
+      let usage = parseFloat(this.quoteData.usages.unit);
+      let unit = parseFloat(this.quoteData.unit_rate.unit);
+      charges += usage * unit;
+      usages += usage;
+    }
+    if(this.quoteData.meterType.day && this.quoteData.usages.day){
+      let usage = parseFloat(this.quoteData.usages.day);
+      let unit = parseFloat(this.quoteData.unit_rate.day);
+      charges += usage * unit;
+      usages += usage;
+    }
+    if(this.quoteData.meterType.night && this.quoteData.usages.night){
+        let usage = parseFloat(this.quoteData.usages.night);
+        let unit = parseFloat(this.quoteData.unit_rate.night);
+        charges += usage * unit;
+        usages += usage;
+    }
+    if(this.quoteData.meterType.weekend && this.quoteData.usages.weekend){
+        let usage = parseFloat(this.quoteData.usages.weekend);
+        let unit = parseFloat(this.quoteData.unit_rate.weekend);
+        charges += usage * unit;
+        usages += usage;
+    }
+    if(this.quoteData.meterType.other && this.quoteData.usages.other){
+        let usage = parseFloat(this.quoteData.usages.other);
+        let unit = parseFloat(this.quoteData.unit_rate.other);
+        charges += usage * unit;
+        usages += usage;
+    }
     this.quoteData.yearly_usages = usages;
-    this.quoteData.yearly_cost = usages + (this.quoteData.standing_charge)/100 * 365;
+    if(this.quoteData.standing_charge){
+      charges += parseFloat(this.quoteData.standing_charge) * 365;
+    }
+    charges = charges / 100;
+    this.quoteData.yearly_cost = charges;
     return this.quoteData.yearly_cost.toFixed(2);
   }
 
@@ -490,8 +490,15 @@ export class QuoteCreatePage {
         });
       }else{
         let errorMsg = 'Something went wrong. Please contact your app developer';
+        if(response.json().hasOwnProperty('msg')){
+          if(response.json().msg instanceof String){
+            errorMsg = response.json().msg
+          }else{
+            errorMsg = response.json().msg.join();
+          }
+        }
         this.toast.create({
-          message: (response.json().hasOwnProperty('msg')) ? response.json().msg.join():errorMsg,
+          message: errorMsg,
           duration: 3000
         }).present();  
       }

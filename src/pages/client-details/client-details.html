@@ -17,7 +17,7 @@
     </ion-buttons>
   </ion-navbar>
 </ion-header>
-<ion-content padding>
+<ion-content>
   <form [formGroup]="clientForm" (ngSubmit)="save()">
     <ion-card>
       <ion-card-header>
@@ -138,16 +138,15 @@
         Documents
       </ion-card-header>
       <ion-card-content>
+          <input #documentUpload  style="display: none;" type="file" name="" id="uploadDocument" (change)="uploadInputDoc($event)"/>
         <ion-list>
           <ion-item *ngFor="let docs of clientDetails.docs">
             <h2>{{docs.file_name}}</h2>
-            <p>
-              {{(docs.type)?"Document Type:" + docs.type: ''}}<br/>
-              {{(docs.created_at)?"Created At:" + docs.created_at:''}}<br/>
-              {{(docs.authorized_at)? (docs.approved == 1)?"Approved":'Not Approved' :''}}<br/>
-              {{(docs.authorized_at)? (docs.approved == 1)?"Authorized By: " + docs.authorizedBy :'' :''}}<br/>
-              {{(docs.authorized_at)? " Authorized at " + docs.authorized_at : 'Waiting for Approval'}}
-            </p>
+            <div>{{(docs.type)?"Document Type:" + docs.type: ''}}</div>
+            <div *ngIf="docs.created_at">{{(docs.created_at)?"Created At:" + docs.created_at:''}}</div>
+            <div *ngIf="docs.authorized_at">{{(docs.authorized_at)? (docs.approved == 1)?"Approved":'Not Approved' :''}}</div>
+            <div *ngIf="(docs.authorizedBy && docs.approved)">{{(docs.authorizedBy && docs.approved)? "Authorized By: " + docs.authorizedBy :'' }}</div>
+            <div>{{(docs.authorized_at)? " Authorized at " + docs.authorized_at : 'Waiting for Approval'}}</div>
           </ion-item>
         </ion-list>
       </ion-card-content>

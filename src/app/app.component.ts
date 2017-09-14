@@ -1,3 +1,4 @@
+import { Http } from '@angular/http';
 import { LaravelProvider } from './../providers/laravel/laravel';
 import { Storage } from '@ionic/storage';
 import { Component, ViewChild } from '@angular/core';
@@ -19,7 +20,9 @@ export class MyApp {
     splashScreen: SplashScreen, 
     private storage: Storage,
     private laravel: LaravelProvider,
-    public loadingCtrl: LoadingController) {
+    public loadingCtrl: LoadingController,
+    public http:Http
+  ) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -28,15 +31,30 @@ export class MyApp {
       });
       this.loading.present();
       //this.laravel.startLoading('Authenticating please wait...');
-      this.storage.get('userTokenInfo').then((val) => {
+      this.storage.get('mayfairEnergy_accessToken').then((val) => {
         if(val){
-          this.loading.dismiss();
           this.laravel.setToken(val);
-          this.nav.setRoot('HomePage');
-        }else{
           this.loading.dismiss();
-          this.nav.setRoot('LoginPage');
-          
+          this.nav.setRoot('HomePage');
+          /*this.http.get(this.laravel.getCheckToken(),{headers: headers })
+          .subscribe(res => {
+            if(res.json().success){
+              this.loading.dismiss().then(()=>{
+                this.nav.setRoot('HomePage');
+              });
+            }
+          }, err => {
+            this.loading.dismiss().then(()=>{
+              this.storage.remove('mayfairEnergy_accessToken').then(()=>{
+                this.laravel.removeToken();
+                this.nav.setRoot('LoginPage');
+              });
+            });
+          });*/
+        }else{
+          this.loading.dismiss().then(()=>{
+            this.nav.setRoot('LoginPage');
+          });
         }
       },(error)=>{
         this.loading.dismiss();

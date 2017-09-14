@@ -133,6 +133,10 @@
                 <ion-option *ngFor="let region of electric_regions" [value]="region.id">{{region.name}}</ion-option>
               </ion-select>
             </ion-item>
+            <ion-item *ngIf="quoteData.meterType.unit">
+                <ion-label floating>Usage Unit (KWh)</ion-label>
+                <ion-input type="number" [(ngModel)]="quoteData.usages.unit"></ion-input>
+              </ion-item>
             <ion-item *ngIf="quoteData.meterType.day">
               <ion-label floating>Usage Day (KWh)</ion-label>
               <ion-input type="number" [(ngModel)]="quoteData.usages.day"></ion-input>
@@ -153,6 +157,10 @@
               <ion-label>Renewal Date</ion-label>
               <ion-datetime displayFormat="DD/MM/YYYY" [(ngModel)]="quoteData.renewal_date"></ion-datetime>
             </ion-item>
+            <ion-item *ngIf="quoteData.meterType.unit">
+                <ion-label floating>Unit Rate (p/KWh)</ion-label>
+                <ion-input type="number" [(ngModel)]="quoteData.unit_rate.unit"></ion-input>
+              </ion-item>
             <ion-item *ngIf="quoteData.meterType.day">
               <ion-label floating>Day Rate (p/KWh)</ion-label>
               <ion-input type="number" [(ngModel)]="quoteData.unit_rate.day"></ion-input>
@@ -210,6 +218,11 @@
           </ion-list>
         </div>
       </button>
+      <ion-card *ngIf="!data.length">
+        <ion-card-content>
+          Sorry, We didn't find any supplier for you.<br/>
+        </ion-card-content>
+      </ion-card>
     </ion-col>
     <ion-col class="verify" *ngSwitchCase="'generate-quote'">
       <div>
@@ -234,6 +247,7 @@
           <ion-item><strong>Supplier Name:</strong> {{quoteData.current_supplier_name}}</ion-item>
           <ion-item *ngIf="quoteData.quoteType != 'GAS'"><strong>DNO:</strong> {{dnoStr(quoteData.current_region)}}</ion-item>
           <ion-item *ngIf="quoteData.quoteType == 'GAS'"><strong>LDZ:</strong> quoteData.current_region ({{gas_regions[quoteData.current_region]}})</ion-item>
+          <ion-item *ngIf="quoteData.meterType.day"><strong>Usages:</strong> {{quoteData.usages.unit}}</ion-item>
           <ion-item *ngIf="quoteData.meterType.day"><strong>Day Usages:</strong> {{quoteData.usages.day}}</ion-item>
           <ion-item *ngIf="quoteData.meterType.night"><strong>Night Usages:</strong> {{quoteData.usages.night}}</ion-item>
           <ion-item *ngIf="quoteData.meterType.weekend"><strong>Weekend Usages:</strong> {{quoteData.usages.weekend}}</ion-item>

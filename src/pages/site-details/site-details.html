@@ -9,6 +9,9 @@
   <ion-navbar>
     <ion-title>{{siteDetails.site.site_name}}</ion-title>
     <ion-buttons end>
+      <button ion-button icon-only (click)="uploadDocument()">
+          <ion-icon name="cloud-upload"></ion-icon>
+        </button>
       <button ion-button icon-only (click)="save()">
         <ion-icon name="checkmark"></ion-icon>
       </button>
@@ -18,7 +21,7 @@
 </ion-header>
 
 
-<ion-content padding>
+<ion-content>
   <form [formGroup]="siteForm" (ngSubmit)="save()">
     <ion-card>
       <ion-card-header>
@@ -211,6 +214,7 @@
     <ion-card>
       <ion-card-header>Documents</ion-card-header>
       <ion-card-content>
+          <input #documentUpload  style="display: none;" type="file" name="" id="uploadDocument" (change)="uploadInputDoc($event)"/>
           <ion-list>
               <ion-item *ngFor="let docs of siteDocs">
                 <h2>{{docs.file_name}}</h2>

@@ -25,14 +25,14 @@ export class SitesPage {
     public laravel:LaravelProvider,
     public http:Http,
     public toast: ToastController,) {
-    this.getSites();
+    this.getData();
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SitesPage');
   }
 
-  getSites(refresher=null){
+  getData(refresher=null){
     this.laravel.startLoading();
     let token:string = this.laravel.getToken();
 
@@ -81,7 +81,7 @@ export class SitesPage {
   }
 
   doRefresh(refresher) {
-    this.getSites(refresher)
+    this.getData(refresher)
   }
 
   openSiteDetailPage(id){

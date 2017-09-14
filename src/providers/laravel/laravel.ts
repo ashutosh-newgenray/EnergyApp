@@ -16,7 +16,7 @@ export class LaravelProvider {
   url:string = 'http://portal.mayfairtech.co.uk/';
   token:string = '';
   loading:any;
-  isProduction:boolean = true;
+  isProduction:boolean = true; 
 
   constructor(public http: Http, public loadingCtrl: LoadingController) {
     console.log('Hello LaravelProvider Provider');
@@ -153,12 +153,24 @@ export class LaravelProvider {
     return this.getUrl() + 'api/uploadClientLogo';
   }
 
+  uploadDoc(){
+    return this.getUrl() + 'api/uploadClientDoc';
+  }
+
+  uploadSiteDoc() {
+    return this.getUrl() + 'api/uploadSiteDoc';
+  }
+
   closeLoading(){
     this.loading.dismiss();
   }
 
   checkUidExist(){
     return this.getUrl() + 'api/checkUidExist'
+  }
+
+  getCheckToken() {
+    return this.getUrl() + 'api/checkToken';
   }
 
 }

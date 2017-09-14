@@ -191,7 +191,7 @@ export class SiteCreatePage {
         this.loading.dismiss();
         if(response.json().success){
           this.navCtrl.pop().then(()=>{
-            this.navParams.get('parentPage').getSites()
+            this.navParams.get('parentPage').getData()
           });
         }else{
           let errorMsg = 'Something went wrong. Please contact your app developer';

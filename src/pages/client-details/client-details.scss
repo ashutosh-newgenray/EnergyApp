@@ -15,4 +15,8 @@ page-client-details {
             border-radius: 4px;
         }
     }
+
+    .card-content-md .list-md .item-md,.card-content-ios .list-ios .item-ios{
+        padding-left:0;
+    }
 }

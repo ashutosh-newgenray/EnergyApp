@@ -100,27 +100,30 @@ export class QuoteDetailsPage {
         content: 'Loading'
       });
       this.loading.present();
-      this.http.get(this.laravel.getDownloadQuotePDF() + '/' + this.quote_id,{
+      this.fileTransfer.download(this.laravel.getDownloadQuotePDF() + '/' + this.quote_id, this.file.dataDirectory + filename ).then((entry) => {
+        this.loading.dismiss();
+        console.log( JSON.stringify(entry));
+        this.toast.create({
+          message: 'Download Completed. Please check the file in Downloads!',
+          duration: 3000
+        }).present();
+      },(error) => {
+        console.log( JSON.stringify(error));
+        this.toast.create({
+          message: 'Something went wrong. Please contact your app developer',
+          duration: 3000
+        }).present();
+      });
+      /*this.http.get(this.laravel.getDownloadQuotePDF() + '/' + this.quote_id,{
         headers: headers
       }).subscribe(response=>{
         this.loading.dismiss();
         if(response.json().success){
+          console.log(response.json().download_link);
           let url = this.laravel.getFileUrl(response.json().download_link);
           let filename = "Quote-" + this.quote_id + ".pdf";
           console.log(filename);
-          this.fileTransfer.download(url, this.file.dataDirectory + filename ).then((entry) => {
-            console.log( JSON.stringify(entry));
-            this.toast.create({
-              message: 'Download Completed. Please check the file in Downloads!',
-              duration: 3000
-            }).present();
-          },(error) => {
-            console.log( JSON.stringify(error));
-            this.toast.create({
-              message: 'Something went wrong. Please contact your app developer',
-              duration: 3000
-            }).present();
-          });
+          
         }else{
           this.toast.create({
             message: 'Something went wrong. Please contact your app developer',
@@ -134,7 +137,7 @@ export class QuoteDetailsPage {
           message: 'Something went wrong. Please contact your app developer',
           duration: 3000
         }).present();
-      });
+      });*/
     }
     
     

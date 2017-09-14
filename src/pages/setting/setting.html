@@ -9,9 +9,9 @@
   <ion-navbar color="secondary">
     <ion-title>Setting</ion-title>
     <ion-buttons end>
-      <button ion-button icon-only (click)="logout()">
+      <!-- <button ion-button icon-only (click)="logout()">
         <ion-icon name="log-out"></ion-icon>
-      </button>
+      </button> -->
       <button ion-button icon-only (click)="save()">
         <ion-icon name="checkmark"></ion-icon>
       </button>
@@ -48,5 +48,6 @@
           <p>Confirm Password should match the Password.</p>
         </ion-item>
     </ion-list>
+    <button ion-button full (click)="logout()" style="margin-top:2rem;">Logout</button>
   </form>
 </ion-content>

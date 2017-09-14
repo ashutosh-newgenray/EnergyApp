@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController, LoadingController } from 'ionic-angular';
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
+import { Component, ViewChild, ElementRef } from '@angular/core';
+import { IonicPage, NavController, NavParams, ToastController, LoadingController, AlertController, ActionSheetController } from 'ionic-angular';
 import { FormBuilder, Validators } from '@angular/forms';
 import { EmailValidator } from './../../validators/email';
 import { LaravelProvider } from './../../providers/laravel/laravel';
 import { Headers, Http } from '@angular/http';
+import { Camera } from '@ionic-native/camera';
 
 /**
  * Generated class for the SiteDetailsPage page.
@@ -17,6 +19,7 @@ import { Headers, Http } from '@angular/http';
   templateUrl: 'site-details.html',
 })
 export class SiteDetailsPage {
+  @ViewChild('documentUpload') documentUpload: ElementRef;
 
   siteForm:any;
   site_id:any;
@@ -90,7 +93,11 @@ export class SiteDetailsPage {
     public toast: ToastController,
     public http:Http,
     private formBuilder: FormBuilder,
-    public loadingCtrl: LoadingController
+    public loadingCtrl: LoadingController,
+    public alertCtrl: AlertController,
+    public actionSheetCtrl: ActionSheetController,
+    private camera: Camera,
+    private transfer: FileTransfer,
   ) {
     this.site_id = this.navParams.get('id');
     this.siteForm = this.formBuilder.group({
@@ -201,6 +208,156 @@ export class SiteDetailsPage {
     }
   }
 
+  uploadDocument($event){
+    let actionSheet = this.actionSheetCtrl.create({
+      title: 'Upload Documents',
+      buttons: [
+        {
+          text: 'Take Picture',
+          handler: () => {
+            this.camera.getPicture().then((imageData)=>{
+              this.uploadCameraDoc(imageData);
+            },(err) => {
+              this.toast.create({
+                message: 'Something went wrong. Please contact your app developer',
+                duration:3000
+              });
+            });
+          }
+        },
+        {
+          text: 'From Saved Files',
+          handler: () =>{
+            this.documentUpload.nativeElement.click();
+          }
+        },
+        {
+          text: 'Cancel',
+          role:'cancel'
+        }
+      ]
+    });
+    actionSheet.present();
+  }
+
+  uploadCameraDoc(fileurl: any){
+    let alert = this.alertCtrl.create({
+      title: 'Document\'s Name',
+      inputs: [
+        {
+          name: 'file_name',
+          placeholder: 'Name of the Document'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+        },
+        {
+          text: 'Submit',
+          handler: data => {
+            this.loading = this.loadingCtrl.create({
+              content:'Please Wait'
+            });
+            this.loading.present();
+            let token:string = this.laravel.getToken();
+            const fileTransfer: FileTransferObject  = this.transfer.create();
+            let options1: FileUploadOptions = {
+              fileKey: 'file',
+              fileName: 'docment.jpg',
+              headers:{'Authorization':token},
+              chunkedMode: false,
+              params:{'file_name':data.file_name}
+            };
+            fileTransfer.upload(fileurl, this.laravel.uploadSiteDoc() + '/' + this.site_id, options1)
+            .then((data)=>{
+              this.loading.dismiss();
+              let response = JSON.parse(data.response);
+              if(response.success){
+                this.siteDocs = response.docs;
+              }else{
+                this.toast.create({
+                  message: 'Sorry we are experiencing some issue while uploading logo. Please contact your app developer',
+                  duration:3000
+                });  
+              }
+            },(err) => {
+              this.loading.dismiss();
+              this.toast.create({
+                message: 'Something went wrong. Please contact your app developer',
+                duration:3000
+              });
+            });
+          }
+        }
+      ],
+      enableBackdropDismiss: false,
+    });
+    alert.present();
+  }
+
+  uploadInputDoc(fileInput: any){
+    var file = fileInput.target.files[0];    
+    let fd = new FormData();
+    fd.append("file", file);
+    let alert = this.alertCtrl.create({
+      title: 'Document\'s Name',
+      inputs: [
+        {
+          name: 'file_name',
+          placeholder: 'Name of the Document'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: data => {
+            this.documentUpload.nativeElement.value = '';
+          }
+        },
+        {
+          text: 'Submit',
+          handler: data => {
+            this.loading = this.loadingCtrl.create({
+              content:'Please Wait'
+            });
+            fd.append('file_name',data.file_name);
+            this.loading.present();
+            let headers = new Headers();
+            let token:string = this.laravel.getToken();
+            headers.append('Authorization', token);
+            this.http.post(this.laravel.uploadSiteDoc() + '/' + this.site_id,fd,{
+              headers:headers
+            }).subscribe(response=>{
+              this.loading.dismiss();
+              if(response.json().success){
+                this.siteDocs = response.json().docs;
+              }else{
+                this.toast.create({
+                  message: response.json().msg.join(),
+                  duration:3000
+                });  
+              }
+              return true;
+            }
+            ,error => {
+              this.loading.dismiss();
+              this.toast.create({
+                message: 'Something went wrong. Please contact your app developer',
+                duration:3000
+              });
+              return false;
+            });        
+          }
+        }
+      ],
+      enableBackdropDismiss: false,
+    });
+    alert.present();
+  }
+
   save() {
     this.submitAttempt = true;
     if (this.siteForm.valid){
@@ -245,7 +402,7 @@ export class SiteDetailsPage {
         this.loading.dismiss();
         if(response.json().success){
           this.navCtrl.pop().then(()=>{
-            this.navParams.get('parentPage').getSites()
+            this.navParams.get('parentPage').getData()
           });
         }else{
           this.toast.create({

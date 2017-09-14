@@ -2,11 +2,19 @@ import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-nati
 import { PasswordValidator } from './../../validators/password';
 import { EmailValidator } from './../../validators/email';
 import { LaravelProvider } from './../../providers/laravel/laravel';
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Headers, Http } from '@angular/http';
 import { Camera } from '@ionic-native/camera';
-import { IonicPage, NavController, NavParams, ToastController, LoadingController, ActionSheetController  } from 'ionic-angular';
+import {
+    ActionSheetController,
+    AlertController,
+    IonicPage,
+    LoadingController,
+    NavController,
+    NavParams,
+    ToastController,
+} from 'ionic-angular';
 
 /**
  * Generated class for the ClientDetailsPage page.
@@ -20,7 +28,9 @@ import { IonicPage, NavController, NavParams, ToastController, LoadingController
   templateUrl: 'client-details.html',
 })
 export class ClientDetailsPage {
-  clientForm:any;
+  @ViewChild('documentUpload') documentUpload: ElementRef;
+
+  clientForm:any; 
   client_id:any;
   clientDetails:any = { client:{
       name:'',
@@ -75,7 +85,8 @@ export class ClientDetailsPage {
   private camera: Camera,
   public loadingCtrl: LoadingController,
   public actionSheetCtrl: ActionSheetController,
-  private transfer: FileTransfer
+  private transfer: FileTransfer,
+  private alertCtrl: AlertController
   ) {
     this.client_id = this.navParams.get('id');
     this.clientForm = this.formBuilder.group({
@@ -265,11 +276,19 @@ export class ClientDetailsPage {
         this.loading.dismiss();
         if(response.json().success){
           this.navCtrl.pop().then(()=>{
-            this.navParams.get('parentPage').getClients()
+            this.navParams.get('parentPage').getData()
           });
         }else{
+          let errorMsg = 'Something went wrong. Please contact your app developer';
+          if(response.json().hasOwnProperty('msg')){
+            if(response.json().msg instanceof String){
+              errorMsg = response.json().msg
+            }else{
+              errorMsg = response.json().msg.join();
+            }
+          }
           this.toast.create({
-            message: response.json().msg.join(),
+            message: errorMsg,
             duration: 3000
           }).present();  
         }
@@ -289,14 +308,28 @@ export class ClientDetailsPage {
     }
   }
 
-  uploadDocument(){
+  uploadDocument($event){
+    
     let actionSheet = this.actionSheetCtrl.create({
-      title: 'Documents',
+      title: 'Upload Documents',
       buttons: [
         {
           text: 'Take Picture',
           handler: () => {
-
+            this.camera.getPicture().then((imageData)=>{
+              this.uploadDoc(imageData);
+            },(err) => {
+              this.toast.create({
+                message: 'Something went wrong. Please contact your app developer',
+                duration:3000
+              });
+            });
+          }
+        },
+        {
+          text: 'From Saved Files',
+          handler: () =>{
+            this.documentUpload.nativeElement.click();
           }
         },
         {
@@ -306,6 +339,118 @@ export class ClientDetailsPage {
       ]
     });
     actionSheet.present();
+  }
+
+  uploadInputDoc(fileInput: any){
+    var file = fileInput.target.files[0];    
+    let fd = new FormData();
+    fd.append("file", file);
+    let alert = this.alertCtrl.create({
+      title: 'Document\'s Name',
+      inputs: [
+        {
+          name: 'file_name',
+          placeholder: 'Name of the Document'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: data => {
+            this.documentUpload.nativeElement.value = '';
+          }
+        },
+        {
+          text: 'Submit',
+          handler: data => {
+            this.loading = this.loadingCtrl.create({
+              content:'Please Wait'
+            });
+            fd.append('file_name',data.file_name);
+            this.loading.present();
+            let headers = new Headers();
+            let token:string = this.laravel.getToken();
+            headers.append('Authorization', token);
+            this.http.post(this.laravel.uploadDoc() + '/' + this.client_id,fd,{
+              headers:headers
+            }).subscribe(response=>{
+              this.loading.dismiss();
+              if(response.json().success){
+                this.clientDetails.docs = response.json().docs;
+              }
+              return true;
+            }
+            ,error => {
+              this.loading.dismiss();
+              return false;
+            });        
+          }
+        }
+      ],
+      enableBackdropDismiss: false,
+    });
+    alert.present();
+  }
+
+  uploadDoc(file){
+    let alert = this.alertCtrl.create({
+      title: 'Document\'s Name',
+      inputs: [
+        {
+          name: 'file_name',
+          placeholder: 'Name of the Document'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: data => {
+            this.documentUpload.nativeElement.value = '';
+          }
+        },
+        {
+          text: 'Submit',
+          handler: data => {
+            this.loading = this.loadingCtrl.create({
+              content: 'Uploading File..'
+            });
+            this.loading.present();
+            let token:string = this.laravel.getToken();
+            const fileTransfer: FileTransferObject  = this.transfer.create();
+            let options1: FileUploadOptions = {
+              fileKey: 'document',
+              fileName: 'doc.jpg',
+              headers:{'Authorization':token},
+              chunkedMode: false,
+              params: {'file_name':data.file_name}
+            }
+            fileTransfer.upload(file, this.laravel.uploadDoc() + '/' + this.client_id, options1)
+            .then((data)=> {
+              this.loading.dismiss();
+              let response = JSON.parse(data.response);
+              if(response.success){
+                this.clientDetails.docs = response.docs;
+              }else{
+                this.toast.create({
+                  message: 'Sorry we are experiencing some issue while uploading logo. Please contact your app developer',
+                  duration:3000
+                });  
+              }
+            },(err) => {
+              this.loading.dismiss();
+              this.toast.create({
+                message: 'Something went wrong. Please contact your app developer',
+                duration:3000
+              });
+            });
+          }
+        }
+      ],
+      enableBackdropDismiss: false,
+    });
+    alert.present();
   }
 
   takePicture(){
@@ -327,19 +472,6 @@ export class ClientDetailsPage {
       }]
     });
     actionSheet.present();
-    /*this.camera.getPicture({
-      sourceType: this.camera.PictureSourceType.SAVEDPHOTOALBUM,
-      destinationType: this.camera.DestinationType.DATA_URL,
-      targetWidth: 1000,
-      targetHeight: 1000
-    }).then((imageData) => {
-      this.logo = "data:image/jpeg;base64," + imageData;
-    },(err) => {
-      this.toast.create({
-        message: 'Something went wrong. Please contact your app developer',
-        duration:3000
-      })
-    });*/
   }
 
   openGallery() {
@@ -354,11 +486,17 @@ export class ClientDetailsPage {
         message: 'Something went wrong. Please contact your app developer',
         duration:3000
       });
-    })
+    });
   }
 
   openCamera() {
-    this.camera.getPicture().then((imageData)=>{
+    var options = {
+      quality: 100,
+      sourceType: this.camera.PictureSourceType.CAMERA,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      saveToPhotoAlbum:true
+    };
+    this.camera.getPicture(options).then((imageData)=>{
       this.uploadImage(imageData);
     },(err) => {
       this.toast.create({
@@ -387,7 +525,7 @@ export class ClientDetailsPage {
       let response = JSON.parse(data.response);
       if(response.success){
         this.clientForm.controls.logo.setValue(response.filename);
-        this.logo = fileUrl;
+        this.logo = this.laravel.getImageUrl(response.filename);
       }else{
         this.toast.create({
           message: 'Sorry we are experiencing some issue while uploading logo. Please contact your app developer',

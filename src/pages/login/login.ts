@@ -31,6 +31,7 @@ export class LoginPage {
   client_secret:string = 'UhDETDVn2B88pkXNiI4zETsWwbc9sXGXYupAbHgb';
   client_id = 2;
   loading:any;
+  visiblePass:boolean = false;
 
   constructor(public navCtrl: NavController, 
     public navParams: NavParams, 
@@ -88,12 +89,14 @@ export class LoginPage {
           password:credential.password,
           scope:'*'
         }).subscribe(res => {
-          this.storage.set('userTokenInfo', res.json().token_type+' '+res.json().access_token)
+          this.storage.set('mayfairEnergy_accessToken', res.json().token_type+' '+res.json().access_token)
             .then(
                 data => {
                   this.laravel.setToken(res.json().token_type+' '+res.json().access_token);
-                  this.loading.dismiss();
-                  this.navCtrl.setRoot('HomePage');
+                  this.loading.dismiss().then(()=>{
+                    this.navCtrl.setRoot('HomePage');
+                  });
+                  
                 },
                 error => {
                   this.loading.dismiss();
@@ -128,4 +131,5 @@ export class LoginPage {
     }).present();
   }
 
+  
 }

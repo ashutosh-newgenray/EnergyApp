@@ -26,14 +26,14 @@ export class ClientsPage {
   public toast: ToastController,
   public loadingCtrl:LoadingController,
   public http:Http) {
-    this.getClients();
+    this.getData();
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ClientsPage');
   }
 
-  getClients(refresher=null) {
+  getData(refresher=null) {
     this.loading = this.loadingCtrl.create({
       content: 'Loading Clients'
     });
@@ -88,7 +88,7 @@ export class ClientsPage {
   }
 
   doRefresh(refresher) {
-    this.getClients(refresher)
+    this.getData(refresher)
   }
 
   openClientDetailPage(id){
@@ -96,15 +96,11 @@ export class ClientsPage {
   }
 
   goToCreateSitePage(){
-    this.navCtrl.push('SiteCreatePage',{'id': ''});
+    this.navCtrl.push('SiteCreatePage',{'id': this});
   }
 
   goToClientCreatePage(){
     this.navCtrl.push('ClientCreatePage',{"parentPage": this});
-  }
-
-  getImageUrl(url){
-    return this.laravel.getImageUrl(url);
   }
 
   /*loadMore(infiniteScroll){

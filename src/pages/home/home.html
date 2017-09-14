@@ -11,7 +11,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content>
   <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content
     pullingIcon="arrow-dropdown"
@@ -20,7 +20,72 @@
     refreshingText="Refreshing...">
     </ion-refresher-content>
   </ion-refresher>
-  <ion-list>
+  <ion-card>
+    <ion-card-header>Quick Links</ion-card-header>
+    <ion-card-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col class="center">
+            <div class="icon-background" (tap)="goToClients()">
+              <span class="new-man" style="font-size: 6rem;">
+                <span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span><span class="path9"></span><span class="path10"></span><span class="path11"></span><span class="path12"></span><span class="path13"></span><span class="path14"></span><span class="path15"></span><span class="path16"></span><span class="path17"></span><span class="path18"></span><span class="path19"></span><span class="path20"></span><span class="path21"></span><span class="path22"></span>
+              </span>
+            </div>
+            <div>Clients</div>
+          </ion-col>
+          <ion-col class="center">
+            <div class="icon-background" (tap)="goToSites()">
+              <span class="new-exchange" style="font-size: 6rem;">
+                <span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span><span class="path9"></span><span class="path10"></span><span class="path11"></span><span class="path12"></span><span class="path13"></span><span class="path14"></span><span class="path15"></span><span class="path16"></span><span class="path17"></span><span class="path18"></span><span class="path19"></span><span class="path20"></span><span class="path21"></span><span class="path22"></span><span class="path23"></span><span class="path24"></span><span class="path25"></span><span class="path26"></span><span class="path27"></span><span class="path28"></span><span class="path29"></span><span class="path30"></span><span class="path31"></span><span class="path32"></span><span class="path33"></span><span class="path34"></span><span class="path35"></span><span class="path36"></span><span class="path37"></span><span class="path38"></span><span class="path39"></span><span class="path40"></span><span class="path41"></span><span class="path42"></span>
+              </span>
+            </div>
+            <div>Sites</div>
+          </ion-col>
+          <ion-col class="center" (tap)="goToQuotes()">
+            <div class="icon-background">
+              <span class="new-presentation" style="font-size: 6rem;">
+                <span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span><span class="path6"></span><span class="path7"></span><span class="path8"></span><span class="path9"></span><span class="path10"></span><span class="path11"></span><span class="path12"></span><span class="path13"></span><span class="path14"></span><span class="path15"></span><span class="path16"></span><span class="path17"></span><span class="path18"></span><span class="path19"></span><span class="path20"></span><span class="path21"></span><span class="path22"></span>
+              </span>
+            </div>
+            <div>Quotes</div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      
+    </ion-card-content>
+  </ion-card>
+  <ion-card (click)="goToQuotes()">
+    <ion-card-header>
+      <!-- <ion-icon item-start name="send"></ion-icon> -->
+      Quotation Generated
+      <ion-badge style="float: right;">{{totalQuotes}}</ion-badge>
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #quotesCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+  <ion-card (click)="goToClients()">
+    <ion-card-header>
+      <!-- <ion-icon item-start name="people"></ion-icon> -->
+      Clients
+      <ion-badge style="float: right;">{{totalClients}}</ion-badge>
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #clientsCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+  <ion-card (click)="goToSites()">
+    <ion-card-header>
+      <!-- <ion-icon item-start name="git-network"></ion-icon> -->
+      Sites
+      <ion-badge style="float: right;">{{totalSites}}</ion-badge>
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #sitesCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+  <!--ion-list>
+    
     <button ion-item (click)="goToClients()">
       <ion-icon item-start name="people"></ion-icon>
       Clients
@@ -36,5 +101,5 @@
       Quotes
       <ion-badge item-end>{{totalQuotes}}</ion-badge>
     </button>
-  </ion-list>
+  </ion-list-->
 </ion-content>

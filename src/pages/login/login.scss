@@ -1,5 +1,17 @@
 page-login {
-    .list-ios > .item-block:first-child{
+    .item-md,.item-ios{
+        background: transparent;
+    }
+    .list-ios > .item-block:first-child, .list-md > .item-block:first-child{
         border-top: 0;
+    }
+    .showpassword{
+        position: absolute;
+        font-size: 2.8rem;
+        right: 2.0rem;
+        bottom: 1rem;
+    }
+    .showpassword.active{
+        bottom: 5rem;
     }
 }

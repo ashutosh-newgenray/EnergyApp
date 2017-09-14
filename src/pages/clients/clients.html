@@ -22,7 +22,7 @@
   <ion-list *ngIf="clients.length">
     <button ion-item *ngFor="let client of clients" (click)="openClientDetailPage(client.id)"> 
       <ion-avatar item-start *ngIf="client.logo;else no_image" >
-        <img [src]="getImageUrl(client.logo)">
+        <img [src]="client.logo">
       </ion-avatar>
       <ng-template #no_image>
         <img src="assets/images/no_image_available.png" alt="no image"/>

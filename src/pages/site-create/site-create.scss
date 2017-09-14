@@ -3,4 +3,7 @@ page-site-create {
         width: 135px;
         min-width: 135px;
     }
+    .card-content-md .list-md .item-md,.card-content-ios .list-ios .item-ios{
+        padding-left:0;
+    }
 }

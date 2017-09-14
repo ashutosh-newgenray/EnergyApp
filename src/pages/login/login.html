@@ -14,7 +14,7 @@
     <img src="assets/images/mayfair_logo.png" alt="Mayfair Energy" width="120px"/>
   </div>
   <form [formGroup]="loginForm" (ngSubmit)="login()">
-    <ion-list>
+    <ion-list style="position:relative;">
       <ion-item [class.invalid]="!loginForm.controls.email.valid && (emailChanged || submitAttempt)">
         <ion-label floating>Username</ion-label>
         <ion-input #email type="email" formControlName="email" (change)="elementChanged(email)" autocapitalize="off"></ion-input>
@@ -24,12 +24,16 @@
       </ion-item>
       <ion-item [class.invalid]="!loginForm.controls.password.valid && (passwordChanged || submitAttempt)">
         <ion-label floating>Password</ion-label>
-        <ion-input #password type="password" formControlName="password" (change)="elementChanged(password)" autocapitalize="off"></ion-input>
+        <ion-input #password [type]="visiblePass ? 'text': 'password'" formControlName="password" (change)="elementChanged(password)" autocapitalize="off"></ion-input>
       </ion-item>
       <ion-item class="error-message" *ngIf="!loginForm.controls.password.valid  && (passwordChanged || submitAttempt)">
         <p>Please enter password.</p>
       </ion-item>
+      <div>
+          <ion-icon [name]="visiblePass ?'eye': 'eye-off'" class="showpassword" [ngClass]="{active:!loginForm.controls.password.valid  && (passwordChanged || submitAttempt) }" (click)="visiblePass = !visiblePass"></ion-icon>
+      </div>
     </ion-list>
+    
     <div padding>
         <button ion-button color="primary" block type="submit">Sign In</button>
     </div>
