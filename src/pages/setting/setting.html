@@ -48,6 +48,12 @@
           <p>Confirm Password should match the Password.</p>
         </ion-item>
     </ion-list>
-    <button ion-button full (click)="logout()" style="margin-top:2rem;">Logout</button>
+    <ion-list>
+      <ion-item>
+        To Logout From App
+        <button ion-button item-end outline (click)="logout()" style="margin-top:2rem;">Logout</button>  
+      </ion-item>
+      
+    </ion-list>
   </form>
 </ion-content>

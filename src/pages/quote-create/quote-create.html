@@ -47,7 +47,7 @@
         <h4 style="white-space: normal;"><strong>Client Name</strong>: {{site.client_name}}</h4>
         <p style="white-space: normal;"><strong>Address</strong>: {{site.address_1}}<span *ngIf="site.address_2">,{{site.address_2}}</span>,{{site.city}}, {{site.region}}, {{site.country}}, {{site.postcode}}</p>
         <br/>
-        <div *ngIf="site.electric_supplier_id">
+        <div *ngIf="site.electric_supplier_id" class="remove-item-padding">
           <ion-list>
             <ion-list-header>
               <ion-icon name="flash" ></ion-icon> ELECTRICITY
@@ -75,7 +75,7 @@
           </ion-list>
         </div>
         <br/>
-        <div *ngIf="site.gas_supplier_id">
+        <div *ngIf="site.gas_supplier_id" class="remove-item-padding">
           <ion-list>
             <ion-list-header>
               <ion-icon name="flame"></ion-icon> GAS
@@ -101,7 +101,7 @@
       </button>
     </ion-col>
     <ion-col *ngSwitchCase="'provide-details'">
-      <ion-card>
+      <ion-card class="quote-cards">
         <ion-card-content>
           <ion-list radio-group [(ngModel)]="quoteData.quoteType" (ionChange)="quoteTypeChanged()">
             <ion-item>
@@ -155,7 +155,7 @@
             </ion-item>
             <ion-item>
               <ion-label>Renewal Date</ion-label>
-              <ion-datetime displayFormat="DD/MM/YYYY" [(ngModel)]="quoteData.renewal_date"></ion-datetime>
+              <ion-datetime displayFormat="DD/MM/YYYY" min="2016" max="2100" [(ngModel)]="quoteData.renewal_date"></ion-datetime>
             </ion-item>
             <ion-item *ngIf="quoteData.meterType.unit">
                 <ion-label floating>Unit Rate (p/KWh)</ion-label>
@@ -218,7 +218,7 @@
           </ion-list>
         </div>
       </button>
-      <ion-card *ngIf="!data.length">
+      <ion-card *ngIf="!data.length" class="quote-cards">
         <ion-card-content>
           Sorry, We didn't find any supplier for you.<br/>
         </ion-card-content>

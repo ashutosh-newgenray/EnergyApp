@@ -6,4 +6,7 @@ page-site-create {
     .card-content-md .list-md .item-md,.card-content-ios .list-ios .item-ios{
         padding-left:0;
     }
+    .card-md .item-md.item-block:last-child .item-inner,.card-ios .item-ios.item-block:last-child .item-inner{
+        border-bottom:0 !important; 
+    }
 }

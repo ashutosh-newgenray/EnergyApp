@@ -141,7 +141,7 @@
           </ion-item>
           <ion-item [class.invalid]="!siteForm.controls.electric_contract_end_date.valid && (electric_contract_end_dateChanged || submitAttempt)">
             <ion-label>Contract End Date</ion-label>
-            <ion-datetime #electric_contract_end_date formControlName="electric_contract_end_date" displayFormat="DD/MM/YYYY" (change)="elementChanged(electric_contract_end_date)"></ion-datetime>
+            <ion-datetime #electric_contract_end_date formControlName="electric_contract_end_date" displayFormat="DD/MM/YYYY" min="2016" max="2100" (change)="elementChanged(electric_contract_end_date)"></ion-datetime>
           </ion-item>
           <ion-item class="error-message" *ngIf="!siteForm.controls.electric_contract_end_date.valid  && (electric_contract_end_dateChanged || submitAttempt)">
             <p>The Contract End Date is required.</p>
@@ -181,7 +181,7 @@
           </ion-item>
           <ion-item [class.invalid]="!siteForm.controls.gas_contract_end_date.valid && (gas_contract_end_dateChanged || submitAttempt)">
             <ion-label>Contract End Date</ion-label>
-            <ion-datetime #gas_contract_end_date formControlName="gas_contract_end_date" displayFormat="DD/MM/YYYY" (change)="elementChanged(gas_contract_end_date)"></ion-datetime>
+            <ion-datetime #gas_contract_end_date formControlName="gas_contract_end_date" displayFormat="DD/MM/YYYY" min="2016" max="2100" (change)="elementChanged(gas_contract_end_date)"></ion-datetime>
           </ion-item>
           <ion-item class="error-message" *ngIf="!siteForm.controls.gas_contract_end_date.valid  && (gas_contract_end_dateChanged || submitAttempt)">
               <p>The Contract End Date is required.</p>

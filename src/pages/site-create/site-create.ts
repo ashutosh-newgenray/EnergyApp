@@ -86,6 +86,8 @@ export class SiteCreatePage {
     private formBuilder: FormBuilder,
     public loadingCtrl: LoadingController
   ) {
+    let currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() + 1);
     this.siteForm = this.formBuilder.group({
       client: ['', Validators.required],
       site_name: ['', Validators.required],
@@ -104,12 +106,12 @@ export class SiteCreatePage {
       electric_supplier:[''],
       mpan_top_line:['',[Validators.required]],
       mpan_bottom_line: ['',[Validators.required]],
-      electric_contract_end_date: ['',[Validators.required]],
+      electric_contract_end_date: [currentDate.toISOString(),[Validators.required]],
       electric_usages: ['',[Validators.required]],
       electric_smart_meter_installed: false,
       gas_supplier:[''],
       mpr: ['',[Validators.required]],
-      gas_contract_end_date: ['',[Validators.required]],
+      gas_contract_end_date: [currentDate.toISOString(),[Validators.required]],
       gas_usages: ['',[Validators.required]],
       gas_smart_meter_installed: false
     });
