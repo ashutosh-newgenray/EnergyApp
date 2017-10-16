@@ -22,14 +22,16 @@
   <ion-list *ngIf="clients.length">
     <button ion-item *ngFor="let client of clients" (click)="openClientDetailPage(client.id)"> 
       <ion-avatar item-start *ngIf="client.logo;else no_image" >
-        <img [src]="client.logo">
+        <img [src]="laravel.getImageUrl(client.logo)">
       </ion-avatar>
       <ng-template #no_image>
-        <img src="assets/images/no_image_available.png" alt="no image" style="max-width:100px;"/>
+        <ion-avatar item-start>
+            <img src="assets/images/blank.png"/>
+        </ion-avatar>
       </ng-template>
       <h2 style="white-space: normal;">{{client.name}}</h2>
-      <h3 style="white-space: normal;">{{client.address_1}}</h3>
-      <p style="white-space: normal;">{{client.city}},{{client.country}},{{client.postcode}}</p>
+      <h3 style="white-space: normal;">{{client.address_1}}{{(client.address_2)? ", "+client.address_2:''}}{{(client.address_3)? ", "+client.address_3:''}}</h3>
+      <p style="white-space: normal;">{{(client.city)?client.city+",":''}} {{client.country}}, {{client.postcode}}</p>
     </button>
   </ion-list>
   <ion-card *ngIf="!clients.length && sychedData">
@@ -40,11 +42,11 @@
     </ion-card-content>
   </ion-card>
   <ion-fab right bottom>
-    <button ion-fab color="primary"><ion-icon name="add"></ion-icon></button>
-    <ion-fab-list side="top">
+    <button ion-fab color="primary" (click)="goToClientCreatePage()"><ion-icon name="add"></ion-icon></button>
+    <!-- <ion-fab-list side="top">
       <button ion-fab (click)="goToClientCreatePage()" ><ion-icon name="people"></ion-icon></button>
       <button ion-fab (click)="goToCreateSitePage()"><ion-icon name="git-network"></ion-icon></button>
-    </ion-fab-list>
+    </ion-fab-list> -->
   </ion-fab> 
 
   <!--ion-infinite-scroll (ionInfinite)="loadMore($event)">

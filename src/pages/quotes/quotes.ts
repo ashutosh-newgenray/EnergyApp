@@ -91,7 +91,7 @@ export class QuotesPage {
   }
 
   openQuoteDetailPage(id){
-    this.navCtrl.push('QuoteDetailsPage',{'id': id, "parentPage": this});
+    this.navCtrl.push('QuoteCreatePage',{'quote_id': id, "parentPage": this});
   }
 
   createQuote() {

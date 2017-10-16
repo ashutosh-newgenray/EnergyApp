@@ -105,12 +105,12 @@
         <ion-card-content>
           <ion-list radio-group [(ngModel)]="quoteData.quoteType" (ionChange)="quoteTypeChanged()">
             <ion-item>
-              <ion-label>Electricity Quote</ion-label>
-              <ion-radio value="ELECTRICITY"></ion-radio>
+              <ion-label>Electricity Quote<p class="help" *ngIf="selectedSite && selectedSite.mpan_top_line == null">Does Not have MPAN</p></ion-label>
+              <ion-radio value="ELECTRICITY" [disabled]="selectedSite && selectedSite.mpan_top_line == null"></ion-radio>
             </ion-item>
             <ion-item>
-              <ion-label>Gas Quote</ion-label>
-              <ion-radio value="GAS"></ion-radio>
+              <ion-label>Gas Quote<p class="help" *ngIf="selectedSite && selectedSite.mpr == null">Does Not have MPR</p></ion-label>
+              <ion-radio value="GAS" [disabled]="selectedSite && selectedSite.mpr == null"></ion-radio>
             </ion-item>
           </ion-list>
           <ion-list>
@@ -187,7 +187,8 @@
             <ion-badge item-end>{{clientYearlyCost}}</ion-badge>
           </ion-item>
           <div padding-top>
-            <button ion-button full (click)="showSuppliers()">Show Suppliers</button>
+            <button ion-button full [disabled]="renewalAlert" (click)="showSuppliers()">Show Suppliers</button>
+            <p *ngIf="renewalAlert">Renewal date is greater than 6 months</p>
           </div>
           
         </ion-card-content>

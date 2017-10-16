@@ -33,6 +33,7 @@ export class SiteDetailsPage {
       mobile: '',
       address_1:'',
       address_2: '',
+      address_3: '',
       city: '',
       region: '',
       country: '',
@@ -76,12 +77,15 @@ export class SiteDetailsPage {
   mprChanged: boolean = false;
   electric_contract_end_dateChanged:boolean = false;
   electric_usagesChanged:boolean = false;
+  gas_supplierChanged:boolean = false;
   gas_contract_end_dateChanged:boolean = false;
   gas_usagesChanged:boolean = false;
+  landlineChanged:boolean = false;
   clientAddress: any = {
     'postcode': '',
     'address_1': '',
     'address_2': '',
+    'address_3': '',
     'city': '',
     'region': '',
     'country': ''
@@ -111,25 +115,27 @@ export class SiteDetailsPage {
       postcode: ['', [Validators.required]],
       address_1:['',Validators.required],
       address_2:[''],
+      address_3:[''],
       city: [''],
       region: [''],
       country:['', Validators.required],
       comments: [''],
       electric_supplier:[''],
-      mpan_top_line:['',[Validators.required]],
-      mpan_bottom_line: ['',[Validators.required]],
-      electric_contract_end_date: ['',[Validators.required]],
-      electric_usages: ['',[Validators.required]],
+      mpan_top_line:[''],
+      mpan_bottom_line: [''],
+      electric_contract_end_date: [''],
+      electric_usages: [''],
       electric_smart_meter_installed: [''],
       gas_supplier:[''],
-      mpr: ['',[Validators.required]],
-      gas_contract_end_date: ['',[Validators.required]],
-      gas_usages: ['',[Validators.required]],
+      mpr: [''],
+      gas_contract_end_date: [''],
+      gas_usages: [''],
       gas_smart_meter_installed: [''],
       ldz:['']
     });
 
     this.getSiteDetails();
+    this.subscribeValidation();
   }
 
   ionViewDidLoad() {
@@ -174,6 +180,7 @@ export class SiteDetailsPage {
         this.siteForm.controls.postcode.setValue(this.siteDetails.site.postcode);
         this.siteForm.controls.address_1.setValue(this.siteDetails.site.address_1);
         this.siteForm.controls.address_2.setValue(this.siteDetails.site.address_2);
+        this.siteForm.controls.address_3.setValue(this.siteDetails.site.address_3);
         this.siteForm.controls.city.setValue(this.siteDetails.site.city);
         this.siteForm.controls.region.setValue(this.siteDetails.site.region);
         this.siteForm.controls.country.setValue(this.siteDetails.site.country);
@@ -358,6 +365,56 @@ export class SiteDetailsPage {
     alert.present();
   }
 
+  subscribeValidation(){
+    const mpanTLCtrl = (<any>this.siteForm).controls.mpan_top_line;
+    const mpanBLCtrl = (<any>this.siteForm).controls.mpan_bottom_line;
+    const electricSCtrl = (<any>this.siteForm).controls.electric_supplier;
+    const electricCEDCtrl = (<any>this.siteForm).controls.electric_contract_end_date;
+    const electricUsageCtrl = (<any>this.siteForm).controls.electric_usages;
+
+    const mprCtrl = (<any>this.siteForm).controls.mpr;
+    const gasCEDCtrl = (<any>this.siteForm).controls.gas_contract_end_date;
+    const gasSCtrl = (<any>this.siteForm).controls.gas_supplier;
+    const gasUsageCtrl = (<any>this.siteForm).controls.gas_usages;
+
+    const gas$ = mprCtrl.valueChanges;
+    const electricity$ = mpanTLCtrl.valueChanges;
+
+    gas$.subscribe(mprValue => {
+      if(mprValue){
+        gasCEDCtrl.setValidators(Validators.required);
+        gasSCtrl.setValidators(Validators.required);
+        gasUsageCtrl.setValidators(Validators.required);
+      }else{
+        gasCEDCtrl.setValidators([]);
+        gasSCtrl.setValidators([]);
+        gasUsageCtrl.setValidators([]);
+      }
+      gasCEDCtrl.updateValueAndValidity();
+      gasSCtrl.updateValueAndValidity();
+      gasUsageCtrl.updateValueAndValidity();
+    });
+
+    electricity$.subscribe(mpanTopValue => {
+      if(mpanTopValue){
+        mpanBLCtrl.setValidators(Validators.required);
+        electricCEDCtrl.setValidators(Validators.required);
+        electricSCtrl.setValidators(Validators.required);
+        electricUsageCtrl.setValidators(Validators.required);
+      }else{
+        mpanBLCtrl.setValidators([]);
+        electricCEDCtrl.setValidators([]);
+        electricSCtrl.setValidators([]);
+        electricUsageCtrl.setValidators([]);
+      }
+      mpanBLCtrl.updateValueAndValidity();
+      electricCEDCtrl.updateValueAndValidity();
+      electricSCtrl.updateValueAndValidity();
+      electricUsageCtrl.updateValueAndValidity();
+    });
+
+  }
+
   save() {
     this.submitAttempt = true;
     if (this.siteForm.valid){
@@ -373,6 +430,7 @@ export class SiteDetailsPage {
         postcode: this.siteForm.controls.postcode.value,
         address_1: this.siteForm.controls.address_1.value,
         address_2: this.siteForm.controls.address_2.value,
+        address_3: this.siteForm.controls.address_3.value,
         city: this.siteForm.controls.city.value,
         region: this.siteForm.controls.region.value,
         country: this.siteForm.controls.country.value,
@@ -405,8 +463,14 @@ export class SiteDetailsPage {
             this.navParams.get('parentPage').getData()
           });
         }else{
+          let msg = 'Something went wrong please contact your developer';
+          if(response.json().msg instanceof Array){
+            msg = response.json().msg.join();
+          }else if(response.json().msg){
+            msg = response.json().msg;
+          }
           this.toast.create({
-            message: response.json().msg.join(),
+            message: msg,
             duration: 3000
           }).present();  
         }
@@ -445,6 +509,7 @@ export class SiteDetailsPage {
           this.siteForm.controls.postcode.setValue(this.clientAddress.postcode);
           this.siteForm.controls.address_1.setValue(this.clientAddress.address_1);
           this.siteForm.controls.address_2.setValue(this.clientAddress.address_2);
+          this.siteForm.controls.address_3.setValue(this.clientAddress.address_3);
           this.siteForm.controls.city.setValue(this.clientAddress.city);
           this.siteForm.controls.region.setValue(this.clientAddress.region);
           this.siteForm.controls.country.setValue(this.clientAddress.country);
@@ -463,5 +528,9 @@ export class SiteDetailsPage {
   elementChanged(input){
     let field = input.ngControl.name;
     this[field + "Changed"] = true;
+  }
+
+  goGenerateQuote(){
+    this.navCtrl.push('QuoteCreatePage',{'site_id': this.site_id});
   }
 }

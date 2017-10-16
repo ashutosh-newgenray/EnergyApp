@@ -29,6 +29,7 @@ export class SiteCreatePage {
       mobile: '',
       address_1:'',
       address_2: '',
+      address_3: '',
       city: '',
       region: '',
       country: '',
@@ -65,14 +66,18 @@ export class SiteCreatePage {
   mprChanged:boolean = false;
   mpan_bottom_lineChanged:boolean = false;
   mpan_top_lineChanged:boolean = false;
+  electric_supplierChanged:boolean = false;
   electric_contract_end_dateChanged:boolean = false;
   electric_usagesChanged:boolean = false;
+  gas_supplierChanged:boolean = false;
   gas_contract_end_dateChanged:boolean = false;
   gas_usagesChanged:boolean = false;
+  landlineChanged:boolean = false;
   clientAddress: any = {
     'postcode': '',
     'address_1': '',
     'address_2': '',
+    'address_3': '',
     'city': '',
     'region': '',
     'country': ''
@@ -99,23 +104,37 @@ export class SiteCreatePage {
       postcode: ['', [Validators.required]],
       address_1:['',Validators.required],
       address_2:[''],
+      address_3:[''],
       city: [''],
       region: [''],
       country:['', Validators.required],
       comments: [''],
       electric_supplier:[''],
-      mpan_top_line:['',[Validators.required]],
-      mpan_bottom_line: ['',[Validators.required]],
-      electric_contract_end_date: [currentDate.toISOString(),[Validators.required]],
-      electric_usages: ['',[Validators.required]],
+      mpan_top_line: [''],
+      mpan_bottom_line: [''],
+      electric_contract_end_date: [currentDate.toISOString()],
+      electric_usages: [''],
       electric_smart_meter_installed: false,
       gas_supplier:[''],
-      mpr: ['',[Validators.required]],
-      gas_contract_end_date: [currentDate.toISOString(),[Validators.required]],
-      gas_usages: ['',[Validators.required]],
+      mpr: [''],
+      gas_contract_end_date: [currentDate.toISOString()],
+      gas_usages: [''],
       gas_smart_meter_installed: false
     });
     this.getSiteFormData();
+    if(this.navParams.get('id')){
+      this.siteForm.controls.client.setValue(this.navParams.get('id'));
+      this.siteForm.controls.email.setValue(this.navParams.get('email'));
+      this.siteForm.controls.postcode.setValue(this.navParams.get('postcode'));
+      this.siteForm.controls.address_1.setValue(this.navParams.get('address_1'));
+      this.siteForm.controls.address_2.setValue(this.navParams.get('address_2'));
+      this.siteForm.controls.address_3.setValue(this.navParams.get('address_3'));
+      this.siteForm.controls.city.setValue(this.navParams.get('city'));
+      this.siteForm.controls.region.setValue(this.navParams.get('region'));
+      this.siteForm.controls.country.setValue(this.navParams.get('country'));
+      this.siteForm.controls.copy_address.setValue(true);
+    }
+    this.subscribeValidation();
   }
 
   ionViewDidLoad() {
@@ -150,9 +169,59 @@ export class SiteCreatePage {
     }
   }
 
+  subscribeValidation(){
+    const mpanTLCtrl = (<any>this.siteForm).controls.mpan_top_line;
+    const mpanBLCtrl = (<any>this.siteForm).controls.mpan_bottom_line;
+    const electricSCtrl = (<any>this.siteForm).controls.electric_supplier;
+    const electricCEDCtrl = (<any>this.siteForm).controls.electric_contract_end_date;
+    const electricUsageCtrl = (<any>this.siteForm).controls.electric_usages;
+
+    const mprCtrl = (<any>this.siteForm).controls.mpr;
+    const gasCEDCtrl = (<any>this.siteForm).controls.gas_contract_end_date;
+    const gasSCtrl = (<any>this.siteForm).controls.gas_supplier;
+    const gasUsageCtrl = (<any>this.siteForm).controls.gas_usages;
+
+    const gas$ = mprCtrl.valueChanges;
+    const electricity$ = mpanTLCtrl.valueChanges;
+
+    gas$.subscribe(mprValue => {
+      if(mprValue){
+        gasCEDCtrl.setValidators(Validators.required);
+        gasSCtrl.setValidators(Validators.required);
+        gasUsageCtrl.setValidators(Validators.required);
+      }else{
+        gasCEDCtrl.setValidators([]);
+        gasSCtrl.setValidators([]);
+        gasUsageCtrl.setValidators([]);
+      }
+      gasCEDCtrl.updateValueAndValidity();
+      gasSCtrl.updateValueAndValidity();
+      gasUsageCtrl.updateValueAndValidity();
+    });
+
+    electricity$.subscribe(mpanTopValue => {
+      if(mpanTopValue){
+        mpanBLCtrl.setValidators(Validators.required);
+        electricCEDCtrl.setValidators(Validators.required);
+        electricSCtrl.setValidators(Validators.required);
+        electricUsageCtrl.setValidators(Validators.required);
+      }else{
+        mpanBLCtrl.setValidators([]);
+        electricCEDCtrl.setValidators([]);
+        electricSCtrl.setValidators([]);
+        electricUsageCtrl.setValidators([]);
+      }
+      mpanBLCtrl.updateValueAndValidity();
+      electricCEDCtrl.updateValueAndValidity();
+      electricSCtrl.updateValueAndValidity();
+      electricUsageCtrl.updateValueAndValidity();
+    });
+
+  }
+
   save() {
     this.submitAttempt = true;
-    if (this.siteForm.valid){
+    if (this.siteForm.valid && (this.siteForm.controls.mpr.value || this.siteForm.controls.mpan_top_line.value)){
       let siteData = {
         client: this.siteForm.controls.client.value,
         site_name: this.siteForm.controls.site_name.value,
@@ -164,6 +233,7 @@ export class SiteCreatePage {
         postcode: this.siteForm.controls.postcode.value,
         address_1: this.siteForm.controls.address_1.value,
         address_2: this.siteForm.controls.address_2.value,
+        address_3: this.siteForm.controls.address_3.value,
         city: this.siteForm.controls.city.value,
         region: this.siteForm.controls.region.value,
         country: this.siteForm.controls.country.value,
@@ -192,9 +262,13 @@ export class SiteCreatePage {
       }).subscribe(response=>{
         this.loading.dismiss();
         if(response.json().success){
-          this.navCtrl.pop().then(()=>{
-            this.navParams.get('parentPage').getData()
-          });
+          if(this.navParams.get('id')){
+            this.navCtrl.pop();
+          }else{
+            this.navCtrl.pop().then(()=>{
+              this.navParams.get('parentPage').getData()
+            });
+          }
         }else{
           let errorMsg = 'Something went wrong. Please contact your app developer';
           this.toast.create({
@@ -210,6 +284,11 @@ export class SiteCreatePage {
           duration: 3000
         }).present();
       });
+    }else if(this.siteForm.valid){
+      this.toast.create({
+        message: 'Please Provide Details of atleast one Supplier',
+        duration: 3000
+      }).present();
     }else{
       this.toast.create({
         message: 'Please fill all required fields',
@@ -242,6 +321,7 @@ export class SiteCreatePage {
           this.siteForm.controls.postcode.setValue(this.clientAddress.postcode);
           this.siteForm.controls.address_1.setValue(this.clientAddress.address_1);
           this.siteForm.controls.address_2.setValue(this.clientAddress.address_2);
+          this.siteForm.controls.address_3.setValue(this.clientAddress.address_3);
           this.siteForm.controls.city.setValue(this.clientAddress.city);
           this.siteForm.controls.region.setValue(this.clientAddress.region);
           this.siteForm.controls.country.setValue(this.clientAddress.country);

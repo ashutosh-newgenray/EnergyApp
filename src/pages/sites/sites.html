@@ -32,16 +32,17 @@
       <h4 style="white-space: normal;"><strong>Email: </strong> {{site.email}}</h4>
       <h4 style="white-space: normal;"><strong>Phone: </strong> {{site.phone}}</h4>
       <h4 style="white-space: normal;"><strong>Client: </strong> {{site.client}}</h4>
+      <h4 style="white-space: normal;"><strong>Status: </strong> {{site.status}}</h4>
       <p style="white-space: normal;"><strong>Address: </strong> {{site.address}}</p>
     </button>
   </ion-list>
-  <ion-fab right bottom>
+  <!-- <ion-fab right bottom>
     <button ion-fab color="primary"><ion-icon name="add"></ion-icon></button>
     <ion-fab-list side="top">
       <button ion-fab (click)="goToClientCreatePage()"><ion-icon name="people"></ion-icon></button>
       <button ion-fab (click)="goToCreateSitePage()"><ion-icon name="git-network"></ion-icon></button>
     </ion-fab-list> 
-  </ion-fab> 
+  </ion-fab>  -->
   <!--<ion-card *ngFor="let site of sites" >
     <ion-card-header>
       {{site.site_name}}

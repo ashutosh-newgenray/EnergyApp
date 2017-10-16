@@ -79,6 +79,8 @@ export class ClientsPage {
       this.clients = this.clients.filter((client)=>{
         return client.name.toLowerCase().indexOf(val) > -1 
           || client.address_1.toLowerCase().indexOf(val) > -1 
+          || client.address_2.toLowerCase().indexOf(val) > -1 
+          || client.address_3.toLowerCase().indexOf(val) > -1 
           || client.city.toLowerCase().indexOf(val) > -1
           || client.postcode.toLowerCase().indexOf(val) > -1
           || client.country.toLowerCase().indexOf(val) > -1 

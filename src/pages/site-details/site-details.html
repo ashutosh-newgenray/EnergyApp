@@ -46,11 +46,11 @@
               <p>Please Enter Site Name.</p>
             </ion-item>
             <ion-item [class.invalid]="!siteForm.controls.contact_person.valid && (contact_personChanged || submitAttempt)">
-                <ion-label floating>Contact Person</ion-label>
+                <ion-label floating>Contact Name</ion-label>
                 <ion-input #contact_person type="text" formControlName="contact_person" (change)="elementChanged(contact_person)"></ion-input>
             </ion-item>
             <ion-item class="error-message" *ngIf="!siteForm.controls.contact_person.valid  && (contact_personChanged || submitAttempt)">
-              <p>Please Enter Contact Person.</p>
+              <p>Please Enter Contact Name.</p>
             </ion-item>
             <ion-item [class.invalid]="!siteForm.controls.email.valid && (emailChanged || submitAttempt)">
                 <ion-label floating>Email</ion-label>
@@ -76,7 +76,7 @@
       </ion-card-header>
       <ion-card-content>
         <ion-list>
-          <ion-item>
+          <ion-item class="no-lines">
             <ion-label>Copy address from client</ion-label>
             <ion-checkbox #copy_address formControlName="copy_address" [disabled]="siteForm.controls.client.value ? false : true" (ionChange)="copyAddress(copy_address)"></ion-checkbox>
           </ion-item>
@@ -97,6 +97,10 @@
           <ion-item>
             <ion-label floating>Address 2</ion-label>
             <ion-input #address_2 type="text" formControlName="address_2"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>Address 3</ion-label>
+            <ion-input #address_3 type="text" formControlName="address_3"></ion-input>
           </ion-item>
           <ion-item>
             <ion-label floating>City</ion-label>
@@ -161,7 +165,7 @@
             <p>The Usages is required.</p>
           </ion-item>
           <ion-item>
-            <ion-label>Smart Meter Installed</ion-label>
+            <ion-label class="no-lines">Smart Meter Installed</ion-label>
             <ion-checkbox #electric_smart_meter_installed formControlName="electric_smart_meter_installed"></ion-checkbox>
           </ion-item>
         </ion-list>
@@ -204,7 +208,7 @@
           <ion-item class="error-message" *ngIf="!siteForm.controls.gas_usages.valid  && (gas_usagesChanged || submitAttempt)">
             <p>The Usage is required.</p>
           </ion-item>
-          <ion-item>
+          <ion-item class="no-lines">
             <ion-label>Smart Meter Installed</ion-label>
             <ion-checkbox #gas_smart_meter_installed formControlName="gas_smart_meter_installed"></ion-checkbox>
           </ion-item>
@@ -231,4 +235,17 @@
       </ion-card-content>
     </ion-card>
   </form>
+  <ion-fab right bottom>
+    <button ion-fab color="primary" (click)="goGenerateQuote()"><ion-icon name="add"></ion-icon></button>
+    <!-- <ion-fab-list side="top">
+      <button ion-fab (click)="goToClientCreatePage()" >
+        <ion-icon name="ios-people"></ion-icon>
+        <ion-label>Create Client</ion-label>
+      </button>
+      <button ion-fab (click)="goToCreateSitePage()">
+        <ion-icon name="git-network"></ion-icon>
+        <ion-label>Create Site</ion-label>
+      </button>
+    </ion-fab-list> -->
+  </ion-fab>
 </ion-content>

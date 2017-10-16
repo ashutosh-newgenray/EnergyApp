@@ -4,9 +4,12 @@ page-home {
         padding: 2rem 2rem;
         border-radius: 50%;
         text-align: center;
-        display: inline-block;
+        display: block;
     }
     .card-header-md, .card-header-ios{
         font-weight: bold;
+    }
+    @media (max-width:413px) and (min-width:321px) {
+        
     }
 }

@@ -29,6 +29,28 @@ export class QuoteCreatePage {
   sortKey:string = 'percentage_diff';
   supercommission: any;
   role:any;
+  quoteId: any;
+  pusage:any = {
+    quoteType:null,
+    current_supplier: {},
+    current_region: '',
+    usages: {unit:null, day: null, night: null,weekend: null,other: null}, 
+    renewal_date:'',
+    unit_rate:{unit:null, day:null,night: null,weekend: null,other: null},
+    standing_charge:'',
+    yearly_cost:'',
+    yearly_usages: '',
+    uplift: '',
+    prevUplift: '',
+    meterType: {
+      unit:0,
+      day:0,
+      night:0,
+      weekend:0,
+      other:0,
+    }
+  };
+  quotesupplier: any;
 
   quoteData:any = {
     quoteType: 'ELECTRICITY',
@@ -42,6 +64,7 @@ export class QuoteCreatePage {
     yearly_cost:null,
     yearly_usages: null,
     uplift: 0,
+    prevUplift: 0,
     meterType:{
       unit:0,
       day:0,
@@ -58,6 +81,7 @@ export class QuoteCreatePage {
   filteredDurations:any = [];
   filteredSuppliers:any =[];
   uplift:any = 0;
+  prevUplift:any = 0;
   rowcpy:any = null;
   rowdiff:any = null;
   commission:any;
@@ -89,9 +113,17 @@ export class QuoteCreatePage {
     if(token){
       let headers = new Headers();
       headers.append('Authorization', token);
-
+      var site_id = '';
+      var quote_id = '';
+      if(this.navParams.get('site_id')){
+        site_id = this.navParams.get('site_id');
+      }
+      if(this.navParams.get('quote_id')){
+        this.quoteId = quote_id = this.navParams.get('quote_id');
+      }
       this.http.get(this.laravel.getAllDataQuoteApi(),{
-        headers: headers
+        headers: headers,
+        params: {site_id: site_id,quote_id: quote_id}
       }).subscribe(response => {
         this.sitesData = response.json().sites;
         this.sites = this.sitesData;
@@ -103,6 +135,11 @@ export class QuoteCreatePage {
         this.meterTypes = response.json().meterTypes;
         this.supercommission = response.json().superCommission;
         this.role = response.json().roleName;
+        this.pusage = response.json().usage;
+        this.quotesupplier = response.json().quoteSupplier;
+        if(site_id || quote_id){
+          this.provideDetails('provide-details',response.json().site);
+        }
         this.quoteTypeChanged();
         this.loading.dismiss();
       },
@@ -142,6 +179,21 @@ export class QuoteCreatePage {
   }
 
   quoteTypeChanged(){
+    if(this.quoteId){
+      this.quoteData.quoteType = this.pusage.quoteType;
+      this.quoteData.current_supplier = this.pusage.current_supplier.id;
+      this.quoteData.current_supplier_name = this.pusage.current_supplier.name;
+      this.quoteData.current_region = this.pusage.current_region;
+      this.quoteData.usages = this.pusage.usages;
+      this.quoteData.renewal_date = this.pusage.renewal_date;
+      this.quoteData.unit_rate = this.pusage.unit_rate;
+      this.quoteData.standing_charge = this.pusage.standing_charge;
+      this.quoteData.yearly_cost = this.pusage.yearly_cost;
+      this.quoteData.yearly_usages = this.pusage.yearly_usages;
+      this.quoteData.uplift = this.pusage.uplift;
+      this.quoteData.prevUplift = this.pusage.prevUplift;
+      this.quoteData.meterType = this.pusage.meterType;
+    }
     this.suppliers = this.SuppliersData;
     let supplierType = this.quoteData.quoteType;
     if(supplierType){
@@ -162,29 +214,46 @@ export class QuoteCreatePage {
       
     }
     if(this.selectedSite){
-      this.quoteData.renewal_date = (this.quoteData.quoteType == 'ELECTRICITY')? this.selectedSite.electric_contract_end : this.selectedSite.contract_end_date;
+      if(!this.quoteId){
+        this.quoteData.renewal_date = (this.quoteData.quoteType == 'ELECTRICITY')? this.selectedSite.electric_contract_end : this.selectedSite.contract_end_date;
+      }
       
-      let dno= this.selectedSite.mpan_bottom_line.substring(0,2);
+      
+      let dno = this.selectedSite.mpan_bottom_line ? this.selectedSite.mpan_bottom_line.substring(0,2) : null;
 
-      this.quoteData.current_region = (this.quoteData.quoteType == 'ELECTRICITY')? dno : this.selectedSite.ldz;
-
+      if(!this.quoteId){
+        this.quoteData.current_region = (this.quoteData.quoteType == 'ELECTRICITY')? dno : this.selectedSite.ldz;
+      }
+      
       let elec_supplier = this.suppliers.filter((supplier)=>{
-        return supplier.id == this.selectedSite.electric_supplier_id;
+        if(this.quoteId && this.pusage.current_supplier.id && this.pusage.quoteType == 'ELECTRICITY'){
+          return supplier.id == this.pusage.current_supplier.id;
+        }else{
+          return supplier.id == this.selectedSite.electric_supplier_id;
+        }
       });
       
       let gas_supplier = this.suppliers.filter((supplier)=>{
-        return supplier.id == this.selectedSite.gas_supplier_id;
+        if(this.quoteId && this.pusage.current_supplier.id && this.pusage.quoteType == 'GAS'){
+          return supplier.id == this.pusage.current_supplier.id;
+        }else{
+          return supplier.id == this.selectedSite.gas_supplier_id;
+        }
       });
 
-      let meter_type = this.selectedSite.mpan_top_line.substring(0,2);
+      let meter_type = (this.quoteData.quoteType == 'ELECTRICITY')?(this.selectedSite["mpan_top_line"] ? this.selectedSite["mpan_top_line"].substring(0, 2): null): "03";
       for(let mt of this.meterTypes){
         if(mt.hasOwnProperty("type") && mt.type == meter_type){
           this.quoteData.meterType = mt;
+          if(this.quoteId==null && mt.unit){
+            this.quoteData.usages.unit = this.quoteData.quoteType == 'ELECTRICITY' ? this.selectedSite['electric_usage'] : this.selectedSite['gas_usage']
+          }else if(this.quoteId == null && mt.day){
+            this.quoteData.usages.day = this.quoteData.quoteType == 'ELECTRICITY' ? this.selectedSite['electric_usage'] : this.selectedSite['gas_usage']
+          }
         }
       }
 
       this.currentSupplier = (this.quoteData.quoteType == 'ELECTRICITY') ? elec_supplier : gas_supplier;
-      console.log(JSON.stringify(this.currentSupplier));
       if(this.currentSupplier.length){
         this.quoteData.current_supplier = this.currentSupplier[0];
         this.quoteData.current_supplier_name = this.currentSupplier[0].name;
@@ -227,6 +296,7 @@ export class QuoteCreatePage {
   }
 
   openFiltersModal(){
+    let prev = this.uplift;
     let obj = {
       quoteType: this.quoteData.quoteType, 
       durations: this.durations, 
@@ -240,6 +310,9 @@ export class QuoteCreatePage {
       this.filteredDurations = data.durations;
       this.filteredSuppliers = data.suppliers;
       this.uplift = data.uplift;
+      if(prev != data.uplift){
+        this.prevUplift = prev;
+      }
       this.quoteSupppliers();
     })
     filterModal.present();
@@ -260,10 +333,8 @@ export class QuoteCreatePage {
       if(this.quoteData.meterType.weekend  && !this.quoteData.usages.weekend){
           msg += "Provide Electricity Weekend Usage.<br>"
       }
-    }else{
-      if(!this.quoteData.usages.day){
-        msg += "Provide Gas Usage details.<br>"
-      }
+    }else if(!this.quoteData.usages.day && !this.quoteData.usages.unit){
+      msg += "Provide Gas Usage details.<br>"
     }
     if(!this.quoteData.current_supplier){
       msg += "Select Current Supplier Supplier<br>"
@@ -287,6 +358,7 @@ export class QuoteCreatePage {
 
   quoteSupppliers(){
     this.data = this.prices;
+    this.quoteData.uplift = this.uplift;
     if(this.quoteData.quoteType == "GAS"){
       this.data = this.data.filter((row)=>{
         return row['price_type'] == 1 && row['ldz'] == this.quoteData.current_region  
@@ -314,6 +386,10 @@ export class QuoteCreatePage {
     }
 
     for(let i=0; i < this.data.length;i++){
+      this.data[i].day = (parseFloat(this.data[i].day) - this.quoteData.prevUplift  + this.quoteData.uplift).toFixed(2);
+      this.data[i].night = (parseFloat(this.data[i].night) - this.quoteData.prevUplift + this.quoteData.uplift).toFixed(2);
+      this.data[i]['evening_&_weekend'] = (parseFloat(this.data[i]['evening_&_weekend']) - this.quoteData.prevUplift + this.quoteData.uplift).toFixed(2);
+      this.data[i].unit_rate = (parseFloat(this.data[i]['unit_rate']) - this.quoteData.prevUplift + this.quoteData.uplift).toFixed(2);
       this.data[i].cost_per_year = this.getCostPerYear(this.data[i]);
       this.data[i].difference = this.getDifference();
       this.data[i].percentage_diff = this.getPercentageDiff();
@@ -333,11 +409,11 @@ export class QuoteCreatePage {
   getCostPerYear(item){
     let charges = 0;
     let usages = 0;
-    let unit = parseFloat(item.unit_rate);
-    let day = parseFloat(item.day);
-    let night = parseFloat(item.night);
-    let evening = parseFloat(item['evening_&_weekend']);
-    let other = parseFloat(item.other);
+    let unit = parseFloat(item.unit_rate) + this.uplift;
+    let day = parseFloat(item.day) + this.uplift;
+    let night = parseFloat(item.night) + this.uplift;
+    let evening = parseFloat(item['evening_&_weekend']) + this.uplift;
+    let other = parseFloat(item.other) + this.uplift;
 
     if(this.quoteData.meterType.unit && this.quoteData.usages.unit){
       let usage = parseFloat(this.quoteData.usages.unit);
@@ -385,7 +461,7 @@ export class QuoteCreatePage {
   }
 
   getDifference(){
-    this.rowdiff = (parseFloat(this.quoteData.yearly_cost) - parseFloat(this.rowcpy)).toFixed(2);
+    this.rowdiff = (parseFloat(this.rowcpy) - parseFloat(this.quoteData.yearly_cost)).toFixed(2);
     return this.rowdiff;
   }
 
@@ -400,13 +476,13 @@ export class QuoteCreatePage {
   }
 
   getCommission(item){
-    let charges = parseFloat(this.getCostPerYear(item));
+    let usage = parseFloat(this.quoteData.yearly_usages);
     let commission = 0;
     if(this.role == 'AGENT'){
-      let agencyCommission = (charges * this.uplift * parseFloat(this.supercommission)) / (100);
-      commission = (agencyCommission * this.uplift * parseFloat(this.commission)) / (100);
+      let agencyCommission = (usage * this.uplift * parseFloat(this.supercommission)) / (1000);
+      commission = (agencyCommission * this.uplift * parseFloat(this.commission)) / (1000);
     }else{
-      commission = (charges * this.uplift * parseFloat(this.commission)) / (100);
+      commission = (usage * this.uplift * parseFloat(this.commission)) / (1000);
     }
     return commission.toFixed(2);
   }
@@ -453,6 +529,16 @@ export class QuoteCreatePage {
     return this.quoteData.yearly_cost.toFixed(2);
   }
 
+  get renewalAlert(){
+    let rdate = this.quoteData.renewal_date;
+    let rtimestamp = new Date(rdate).getTime();
+    let timestamp = new Date().getTime() + (180 * 24 * 60 * 60 * 1000)
+    if(rtimestamp > timestamp){
+        return true;
+    }
+    return false;
+  }
+
   getLogo(logo){
     return this.laravel.getImageUrl(logo);
   }
@@ -470,13 +556,14 @@ export class QuoteCreatePage {
     this.loading.present();
 
     let data = {
+      quoteid: (this.quoteId)?this.quoteId:null,
       id: this.supplierId,
       site: this.selectedSite,
       supplier: this.selectedSupplier,
       usages: this.quoteData,
       comparisons: this.data
     }
-
+    
     let headers = new Headers();
     let token:string = this.laravel.getToken();
     headers.append('Authorization', token);
@@ -486,7 +573,14 @@ export class QuoteCreatePage {
       this.loading.dismiss();
       if(response.json().success){
         this.navCtrl.pop().then(()=>{
-          this.navParams.get('parentPage').getQuotes();
+          if(this.quoteId){
+            this.navParams.get('parentPage').getQuotes();
+          }else{
+            this.toast.create({
+              message:'Quote has been created',
+              duration: 3000
+            }).present();
+          }
         });
       }else{
         let errorMsg = 'Something went wrong. Please contact your app developer';

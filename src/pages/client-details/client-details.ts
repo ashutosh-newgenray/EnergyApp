@@ -1,5 +1,5 @@
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
-import { PasswordValidator } from './../../validators/password';
+// import { PasswordValidator } from './../../validators/password';
 import { EmailValidator } from './../../validators/email';
 import { LaravelProvider } from './../../providers/laravel/laravel';
 import { Component, ViewChild, ElementRef } from '@angular/core';
@@ -36,6 +36,7 @@ export class ClientDetailsPage {
       name:'',
       address_1:'',
       address_2:'',
+      address_3:'',
       approved:'',
       city:'',
       comments:'',
@@ -68,14 +69,14 @@ export class ClientDetailsPage {
   nameChanged:boolean = false;
   uidChanged:boolean = false;
   emailChanged:boolean = false;
-  passwordChanged:boolean = false;
-  confirmPasswordChanged:boolean = false;
+  /*passwordChanged:boolean = false;
+  confirmPasswordChanged:boolean = false;*/
   address_1Changed:boolean = false;
   postcodeChanged:boolean = false;  
   countryChanged:boolean = false;
   submitAttempt:boolean = false;
   loading:any;
-  logo: string = 'assets/images/no_image_available.png';
+  logo: string = 'assets/images/blank.png';
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
   public laravel:LaravelProvider,
@@ -94,30 +95,31 @@ export class ClientDetailsPage {
           uid:['', Validators.required],
           company_status:[''],
           email:['', Validators.compose([Validators.required, EmailValidator.isValid])],
-          approved:[{value:false,disabled:true}],
-          user_active:[''],
+          /*approved:[{value:false,disabled:true}],
+          user_active:[''],*/
           logo:[''],
           address_1: ['',Validators.required],
           address_2: [''],
+          address_3: [''],
           city: [''],
           region: [''],
           postcode: ['',Validators.required],
           country: ['',Validators.required],
-          resetPassword:[false],
+          /*resetPassword:[false],
           passwordGroup: this.formBuilder.group({
             password: [''],
             confirmPassword: ['']
-          })
+          })*/
       });
     this.getClientDetails();
-    this.subscribeResetPasswordChanges();
+    /*this.subscribeResetPasswordChanges();*/
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ClientDetailsPage');
   }
 
-  subscribeResetPasswordChanges(){
+  /*subscribeResetPasswordChanges(){
     const rpCtrl = (<any>this.clientForm).controls.resetPassword;
     const pwGrp = (<any>this.clientForm).controls.passwordGroup;
     const pwCtrl = (<any>this.clientForm).controls.passwordGroup.controls.password;
@@ -140,7 +142,7 @@ export class ClientDetailsPage {
         cpwCtrl.updateValueAndValidity();
       }
     });
-  }
+  }*/
 
   getClientDetails(){
     this.loading = this.loadingCtrl.create({
@@ -168,21 +170,24 @@ export class ClientDetailsPage {
       headers: headers
     }).subscribe(response =>{
       this.clientDetails = response.json().clientDetails;
-      this.clientDetails.client.approved = (this.clientDetails.client.approved === "1") ? true: false;
-      this.clientDetails.user_info.active = (this.clientDetails.user_info.active === "1") ? true: false;
+      /*this.clientDetails.client.approved = (this.clientDetails.client.approved === "1") ? true: false;
+      this.clientDetails.user_info.active = (this.clientDetails.user_info.active === "1") ? true: false;*/
       this.clientForm.controls.name.setValue(this.clientDetails.client.name);
       this.clientForm.controls.uid.setValue(this.clientDetails.client.uid);
       this.clientForm.controls.company_status.setValue(this.clientDetails.client.company_status);
       this.clientForm.controls.email.setValue(this.clientDetails.client.email);
-      this.clientForm.controls.approved.setValue(this.clientDetails.client.approved);
-      this.clientForm.controls.user_active.setValue(this.clientDetails.user_info.active);
+      /*this.clientForm.controls.approved.setValue(this.clientDetails.client.approved);
+      this.clientForm.controls.user_active.setValue(this.clientDetails.user_info.active);*/
       this.clientForm.controls.address_1.setValue(this.clientDetails.client.address_1);
       this.clientForm.controls.address_2.setValue(this.clientDetails.client.address_2);
+      this.clientForm.controls.address_3.setValue(this.clientDetails.client.address_3);
       this.clientForm.controls.city.setValue(this.clientDetails.client.city);
       this.clientForm.controls.region.setValue(this.clientDetails.client.region);
       this.clientForm.controls.postcode.setValue(this.clientDetails.client.postcode);
       this.clientForm.controls.country.setValue(this.clientDetails.client.country);
-      this.logo = this.laravel.getImageUrl(this.clientDetails.client.logo);
+      if(this.clientDetails.client.logo){
+        this.logo = this.laravel.getImageUrl(this.clientDetails.client.logo);
+      }
       this.loading.dismiss();
     },
     error => {
@@ -199,7 +204,7 @@ export class ClientDetailsPage {
     this[field + "Changed"] = true;
     if(field == "uid" ){
       this.loading = this.loadingCtrl.create({
-        content: 'Checking Client reference...'
+        content: 'Checking Client Reg. No...'
       });
       this.loading.present();
       let token:string = this.laravel.getToken();
@@ -213,10 +218,10 @@ export class ClientDetailsPage {
           console.log(response);
           if(response.json().success){
             this.toast.create({
-              message: 'This client Reference already exists. Please check client reference again',
+              message: 'This client Reg. number already exists. Please check again',
               duration: 3000
             }).present();
-            this.clientForm.controls.uid.setErrors({'Client reference already exists': true});
+            this.clientForm.controls.uid.setErrors({'Client Reg number already exists': true});
           }else{
             this.clientForm.controls.uid.setErrors(null);
           }
@@ -234,7 +239,17 @@ export class ClientDetailsPage {
   }
 
   goToCreateSitePage(){
-    this.navCtrl.push('SiteCreatePage',{'id': this.client_id});
+    this.navCtrl.push('SiteCreatePage',{
+      'id': this.client_id, 
+      'email': this.clientDetails.client.email,
+      'postcode': this.clientDetails.client.postcode,
+      'address_1': this.clientDetails.client.address_1,
+      'address_2': this.clientDetails.client.address_2,
+      'address_3': this.clientDetails.client.address_3,
+      'city': this.clientDetails.client.city,
+      'region': this.clientDetails.client.region,
+      'country': this.clientDetails.client.country,
+    });
   }
 
   goToClientCreatePage(){
@@ -249,18 +264,19 @@ export class ClientDetailsPage {
         uid: this.clientForm.controls.uid.value,
         company_status: this.clientForm.controls.company_status.value,
         email: this.clientForm.controls.email.value,
-        approved: this.clientForm.controls.approved.value,
-        active: this.clientForm.controls.user_active.value,
+        /*approved: this.clientForm.controls.approved.value,
+        active: this.clientForm.controls.user_active.value,*/
         address_1: this.clientForm.controls.address_1.value,
         address_2: this.clientForm.controls.address_2.value,
+        address_3: this.clientForm.controls.address_3.value,
         city: this.clientForm.controls.city.value,
         region: this.clientForm.controls.region.value,
         postcode: this.clientForm.controls.postcode.value,
         country: this.clientForm.controls.country.value,
-        reset_password: this.clientForm.controls.resetPassword.value,
-        password: this.clientForm.controls.passwordGroup.controls.password.value,
+        /*reset_password: this.clientForm.controls.resetPassword.value,
+        password: this.clientForm.controls.passwordGroup.controls.password.value,*/
         id: this.client_id,
-        logo: (this.logo == 'assets/images/no_image_available.png')? '': this.clientForm.controls.logo.value
+        logo: (this.logo == 'assets/images/blank.png')? '': this.clientForm.controls.logo.value
       }
 
       let headers = new Headers();

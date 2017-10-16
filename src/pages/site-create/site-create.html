@@ -39,11 +39,11 @@
               <p>Please Enter Site Name.</p>
             </ion-item>
             <ion-item [class.invalid]="!siteForm.controls.contact_person.valid && (contact_personChanged || submitAttempt)">
-                <ion-label floating>Contact Person</ion-label>
+                <ion-label floating>Contact Name</ion-label>
                 <ion-input #contact_person type="text" formControlName="contact_person" (change)="elementChanged(contact_person)"></ion-input>
             </ion-item>
             <ion-item class="error-message" *ngIf="!siteForm.controls.contact_person.valid  && (contact_personChanged || submitAttempt)">
-              <p>Please Enter Contact Person.</p>
+              <p>Please Enter Contact Name.</p>
             </ion-item>
             <ion-item [class.invalid]="!siteForm.controls.email.valid && (emailChanged || submitAttempt)">
                 <ion-label floating>Email</ion-label>
@@ -56,9 +56,12 @@
               <ion-label floating>Mobile</ion-label>
               <ion-input #mobile type="text" formControlName="mobile"></ion-input>
             </ion-item>
-            <ion-item>
+            <ion-item [class.invalid]="!siteForm.controls.landline.valid && (landlineChanged || submitAttempt)">
                 <ion-label floating>Landline</ion-label>
                 <ion-input #landline type="number" formControlName="landline"></ion-input>
+            </ion-item>
+            <ion-item class="error-message" *ngIf="!siteForm.controls.landline.valid  && (landlineChanged || submitAttempt)">
+              <p>Please provide Landline detail.</p>
             </ion-item>
           </ion-list>
       </ion-card-content>
@@ -69,7 +72,7 @@
       </ion-card-header>
       <ion-card-content>
         <ion-list>
-          <ion-item>
+          <ion-item class="no-lines">
             <ion-label>Copy address from client</ion-label>
             <ion-checkbox #copy_address formControlName="copy_address" [disabled]="siteForm.controls.client.value ? false : true" (ionChange)="copyAddress(copy_address)"></ion-checkbox>
           </ion-item>
@@ -90,6 +93,10 @@
           <ion-item>
             <ion-label floating>Address 2</ion-label>
             <ion-input #address_2 type="text" formControlName="address_2"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>Address 3</ion-label>
+            <ion-input #address_3 type="text" formControlName="address_3"></ion-input>
           </ion-item>
           <ion-item>
             <ion-label floating>City</ion-label>
@@ -133,11 +140,14 @@
           <ion-item class="error-message" *ngIf="!siteForm.controls.mpan_bottom_line.valid  && (mpan_bottom_lineChanged || submitAttempt)">
             <p>The mpan bottom line field is required.</p>
           </ion-item>
-          <ion-item>
+          <ion-item [class.invalid]="!siteForm.controls.electric_supplier.valid && (electric_supplierChanged || submitAttempt)">
             <ion-label floating>Current Supplier</ion-label>
             <ion-select #electric_supplier formControlName="electric_supplier">
               <ion-option *ngFor="let electricSupplier of electricSuppliers" [value]="electricSupplier.id">{{electricSupplier.name}}</ion-option>
             </ion-select>
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!siteForm.controls.electric_supplier.valid && (electric_supplierChanged || submitAttempt)">
+            <p>Please select current electric supplier.</p>
           </ion-item>
           <ion-item [class.invalid]="!siteForm.controls.electric_contract_end_date.valid && (electric_contract_end_dateChanged || submitAttempt)">
             <ion-label>Contract End Date</ion-label>
@@ -153,7 +163,7 @@
           <ion-item class="error-message" *ngIf="!siteForm.controls.electric_usages.valid  && (electric_usagesChanged || submitAttempt)">
             <p>The Usages is required.</p>
           </ion-item>
-          <ion-item>
+          <ion-item class="no-lines">
             <ion-label>Smart Meter Installed</ion-label>
             <ion-checkbox #electric_smart_meter_installed formControlName="electric_smart_meter_installed"></ion-checkbox>
           </ion-item>
@@ -171,13 +181,16 @@
             <ion-input type="number" text-right #mpr formControlName="mpr" (change)="elementChanged(mpr)" max="10"></ion-input>
           </ion-item>
           <ion-item class="error-message" *ngIf="!siteForm.controls.mpr.valid  && (mprChanged || submitAttempt)">
-            <p>The mpr field is required.</p>
+            <p>The MPR field is required.</p>
           </ion-item>
-          <ion-item>
+          <ion-item [class.invalid]="!siteForm.controls.gas_supplier.valid && (gas_supplierChanged || submitAttempt)">
             <ion-label floating>Current Supplier</ion-label>
             <ion-select #gas_supplier formControlName="gas_supplier">
               <ion-option *ngFor="let gasSupplier of gasSuppliers" [value]="gasSupplier.id">{{gasSupplier.name}}</ion-option>
             </ion-select>
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!siteForm.controls.gas_supplier.valid && (gas_supplierChanged || submitAttempt)">
+            <p>Please select current gas supplier.</p>
           </ion-item>
           <ion-item [class.invalid]="!siteForm.controls.gas_contract_end_date.valid && (gas_contract_end_dateChanged || submitAttempt)">
             <ion-label>Contract End Date</ion-label>
@@ -193,10 +206,10 @@
           <ion-item class="error-message" *ngIf="!siteForm.controls.gas_usages.valid  && (gas_usagesChanged || submitAttempt)">
             <p>The Usage is required.</p>
           </ion-item>
-          <ion-item>
+          <ion-item class="no-lines">
             <ion-label>Smart Meter Installed</ion-label>
             <ion-checkbox #gas_smart_meter_installed formControlName="gas_smart_meter_installed"></ion-checkbox>
-          </ion-item>
+          </ion-item> 
         </ion-list>
       </ion-card-content>
     </ion-card>

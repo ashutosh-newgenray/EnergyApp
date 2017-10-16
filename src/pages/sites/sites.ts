@@ -74,7 +74,8 @@ export class SitesPage {
           || site.email.toLowerCase().indexOf(val) > -1
           || site.phone.toLowerCase().indexOf(val) > -1
           || site.client.toLowerCase().indexOf(val) > -1 
-          || site.address.toLowerCase().indexOf(val) > -1 
+          || site.address.toLowerCase().indexOf(val) > -1
+          || site.status.toLowerCase().indexOf(val) > -1
       });
     }
     

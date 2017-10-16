@@ -2,7 +2,7 @@ import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-nati
 import { FormBuilder, Validators } from '@angular/forms';
 import { Headers,Http } from '@angular/http';
 import { LaravelProvider } from './../../providers/laravel/laravel';
-import { PasswordValidator } from './../../validators/password';
+// import { PasswordValidator } from './../../validators/password';
 import { EmailValidator } from './../../validators/email';
 import { Component } from '@angular/core';
 import { Camera } from '@ionic-native/camera';
@@ -26,6 +26,7 @@ export class ClientCreatePage {
       name:'',
       address_1:'',
       address_2:'',
+      address_3:'',
       approved:false,
       city:'',
       comments:'',
@@ -57,14 +58,14 @@ export class ClientCreatePage {
   nameChanged:boolean = false;
   uidChanged:boolean = false;
   emailChanged:boolean = false;
-  passwordChanged:boolean = false;
-  confirmPasswordChanged:boolean = false;
+  /*passwordChanged:boolean = false;
+  confirmPasswordChanged:boolean = false;*/
   address_1Changed:boolean = false;
   postcodeChanged:boolean = false;  
   countryChanged:boolean = false;
   submitAttempt:boolean = false;
   loading:any;
-  logo: string = 'assets/images/no_image_available.png';
+  logo: string = 'assets/images/blank.png';
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     public laravel: LaravelProvider,
@@ -81,19 +82,20 @@ export class ClientCreatePage {
           uid:['', Validators.required],
           company_status:[''],
           email:['', Validators.compose([Validators.required, EmailValidator.isValid])],
-          approved:[{value:false,disabled:true}],
-          user_active:[''],
+          /*approved:[{value:false,disabled:true}],
+          user_active:[''],*/
           logo:[''],
           address_1: ['',Validators.required],
           address_2: [''],
+          address_3: [''],
           city: [''],
           region: [''],
           postcode: ['',Validators.required],
           country: ['',Validators.required],
-          passwordGroup: this.formBuilder.group({
+          /*passwordGroup: this.formBuilder.group({
             password: ['',Validators.required],
             confirmPassword: ['',Validators.required]
-          },PasswordValidator.MatchPassword)
+          },PasswordValidator.MatchPassword)*/
       });
       this.getCompanyStatus();
   }
@@ -176,17 +178,14 @@ export class ClientCreatePage {
         uid: this.clientForm.controls.uid.value,
         company_status: this.clientForm.controls.company_status.value,
         email: this.clientForm.controls.email.value,
-        approved: this.clientForm.controls.approved.value,
-        active: this.clientForm.controls.user_active.value,
         address_1: this.clientForm.controls.address_1.value,
         address_2: this.clientForm.controls.address_2.value,
+        address_3: this.clientForm.controls.address_3.value,
         city: this.clientForm.controls.city.value,
         region: this.clientForm.controls.region.value,
         postcode: this.clientForm.controls.postcode.value,
         country: this.clientForm.controls.country.value,
-        password: this.clientForm.controls.passwordGroup.controls.password.value,
-        password_confirmation: this.clientForm.controls.passwordGroup.controls.confirmPassword.value,
-        logo: (this.logo == 'assets/images/no_image_available.png')? '': this.logo
+        logo: (this.logo == 'assets/images/blank.png')? '': this.logo
       }
       let token:string = this.laravel.getToken();
       if(token){

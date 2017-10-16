@@ -5,7 +5,7 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-  <ion-navbar>
+  <ion-navbar color="secondary">
     <ion-title>{{clientDetails.client.name}}</ion-title>
     <ion-buttons end>
       <button ion-button icon-only (click)="uploadDocument()">
@@ -30,14 +30,14 @@
               <ion-input #name type="text" formControlName="name" (change)="elementChanged(name)"></ion-input>
             </ion-item>
             <ion-item class="error-message" *ngIf="!clientForm.controls.name.valid  && (nameChanged || submitAttempt)">
-              <p>Please enter name.</p>
+              <p>Please Enter Name.</p>
             </ion-item>
             <ion-item [class.invalid]="!clientForm.controls.uid.valid && (uidChanged || submitAttempt)">
-              <ion-label floating>Client Reference</ion-label>
+              <ion-label floating>Company Number</ion-label>
               <ion-input #uid type="text" formControlName="uid" (change)="elementChanged(uid)"></ion-input>
             </ion-item>
             <ion-item class="error-message" *ngIf="!clientForm.controls.uid.valid  && (uidChanged || submitAttempt)">
-              <p>Please enter UID.</p>
+              <p>Please Enter Company Number.</p>
             </ion-item>
             <ion-item>
               <ion-label floating>Company Status</ion-label>
@@ -52,63 +52,69 @@
             <ion-item class="error-message" *ngIf="!clientForm.controls.email.valid  && (emailChanged || submitAttempt)">
               <p>Please enter a valid email.</p>
             </ion-item>
-            <ion-item>
+            <!-- <ion-item>
               <ion-label>Status</ion-label>
               <ion-toggle #approved formControlName="approved" ></ion-toggle>
             </ion-item>
             <ion-item>
               <ion-label>User Active</ion-label>
               <ion-toggle #user_active formControlName="user_active" ></ion-toggle>
-            </ion-item>
-            <ion-item>
-              <ion-label floating>Logo</ion-label>
-            </ion-item>
+            </ion-item> -->
           </ion-list>
-          <ion-label style="display: inline-block;vertical-align: middle;width: 46%;">Logo</ion-label>
-          <ion-img (click)="takePicture()" width="150" height="150" [src]="logo" style="display: inline-block;vertical-align: middle;width: 50%;" alt="no image"></ion-img>
+          <div padding-top>
+            <ion-label style="display: inline-block;vertical-align: middle;width: 46%;">Logo</ion-label>
+            <ion-img (click)="takePicture()" width="100" height="100" [src]="logo" style="display: inline-block;vertical-align: middle;width: 50%;" alt="no image"></ion-img>
+          </div>
       </ion-card-content>
     </ion-card>
     <ion-card>
       <ion-card-header>
         Address
       </ion-card-header>
-      <ion-list>
-        <ion-item [class.invalid]="!clientForm.controls.address_1.valid && (address_1Changed || submitAttempt)">
-          <ion-label floating>Address 1</ion-label>
-          <ion-input type="text" #address_1 formControlName="address_1" (change)="elementChanged(address_1)"></ion-input>
-        </ion-item>
-        <ion-item class="error-message" *ngIf="!clientForm.controls.address_1.valid  && (address_1Changed || submitAttempt)">
-          <p>Please enter Address 1.</p>
-        </ion-item>
-        <ion-item>
-          <ion-label floating>Address 2</ion-label>
-          <ion-input type="text" #address_2 formControlName="address_2" ></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label floating>City</ion-label>
-          <ion-input type="text" #city formControlName="city"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label floating>Region</ion-label>
-          <ion-input type="text" #region formControlName="region"></ion-input>
-        </ion-item>
-        <ion-item [class.invalid]="!clientForm.controls.postcode.valid && (postcodeChanged || submitAttempt)">
-          <ion-label floating>Postcode</ion-label>
-          <ion-input type="text" #postcode formControlName="postcode"  (change)="elementChanged(postcode)"></ion-input>
-        </ion-item>
-        <ion-item class="error-message" *ngIf="!clientForm.controls.postcode.valid  && (postcodeChanged || submitAttempt)">
-          <p>Please enter postcode.</p>
-        </ion-item>
-        <ion-item [class.invalid]="!clientForm.controls.country.valid && (countryChanged || submitAttempt)">
-          <ion-label floating>Country</ion-label>
-          <ion-input type="text" #country formControlName="country"  (change)="elementChanged(country)"></ion-input>
-        </ion-item>
-        <ion-item class="error-message" *ngIf="!clientForm.controls.country.valid  && (countryChanged || submitAttempt)">
-          <p>Please enter country.</p>
-        </ion-item>
-      </ion-list>
+      <ion-card-content>
+        <ion-list>
+          <ion-item [class.invalid]="!clientForm.controls.address_1.valid && (address_1Changed || submitAttempt)">
+            <ion-label floating>Address 1</ion-label>
+            <ion-input type="text" #address_1 formControlName="address_1" (change)="elementChanged(address_1)"></ion-input>
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!clientForm.controls.address_1.valid  && (address_1Changed || submitAttempt)">
+            <p>Please enter Address 1.</p>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>Address 2</ion-label>
+            <ion-input type="text" #address_2 formControlName="address_2" ></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>Address 3</ion-label>
+            <ion-input type="text" #address_3 formControlName="address_3" ></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>City</ion-label>
+            <ion-input type="text" #city formControlName="city"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>Region</ion-label>
+            <ion-input type="text" #region formControlName="region"></ion-input>
+          </ion-item>
+          <ion-item [class.invalid]="!clientForm.controls.postcode.valid && (postcodeChanged || submitAttempt)">
+            <ion-label floating>Postcode</ion-label>
+            <ion-input type="text" #postcode formControlName="postcode"  (change)="elementChanged(postcode)"></ion-input>
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!clientForm.controls.postcode.valid  && (postcodeChanged || submitAttempt)">
+            <p>Please enter postcode.</p>
+          </ion-item>
+          <ion-item [class.invalid]="!clientForm.controls.country.valid && (countryChanged || submitAttempt)">
+            <ion-label floating>Country</ion-label>
+            <ion-input type="text" #country formControlName="country"  (change)="elementChanged(country)"></ion-input>
+          </ion-item>
+          <ion-item class="error-message" *ngIf="!clientForm.controls.country.valid  && (countryChanged || submitAttempt)">
+            <p>Please enter country.</p>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+      
     </ion-card>
-    <ion-card>
+    <!-- <ion-card>
       <ion-card-header>
         Password
       </ion-card-header>
@@ -132,7 +138,7 @@
           <p>Confirm Password should match the Password.</p>
         </ion-item>
       </ion-list>
-    </ion-card>
+    </ion-card> -->
     <ion-card>
       <ion-card-header>
         Documents
