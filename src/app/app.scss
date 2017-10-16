@@ -794,4 +794,6 @@ ion-card > ion-list > ion-item:last-child{
   -webkit-box-shadow: inset 0 -1px 0 0 map-get($colors, primary);
   box-shadow: inset 0 -1px 0 0 map-get($colors, primary);
 }
-  
+button.item-ios:not([detail-none]) .item-inner{
+  background-image: none; 
+}
