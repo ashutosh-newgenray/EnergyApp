@@ -2,4 +2,7 @@ page-client-create {
     .card-content-md .list-md .item-md,.card-content-ios .list-ios .item-ios{
         padding-left:0;
     }
+    ion-card-header{
+        font-weight: bold;
+    }
 }

@@ -125,12 +125,12 @@ export class SiteDetailsPage {
       mpan_bottom_line: [''],
       electric_contract_end_date: [''],
       electric_usages: [''],
-      electric_smart_meter_installed: [''],
+      electric_smart_meter_installed: [false],
       gas_supplier:[''],
       mpr: [''],
       gas_contract_end_date: [''],
       gas_usages: [''],
-      gas_smart_meter_installed: [''],
+      gas_smart_meter_installed: [false],
       ldz:['']
     });
 

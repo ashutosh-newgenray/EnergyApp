@@ -77,11 +77,14 @@ export class ClientsPage {
 
     if(val && val.trim() != ''){
       this.clients = this.clients.filter((client)=>{
+        var address_3 = (client.address_3)?client.address_3.toLowerCase():'';
+        var address_2 = (client.address_2)?client.address_2.toLowerCase():'';
+        var city = (client.city)?client.city.toLowerCase():'';
         return client.name.toLowerCase().indexOf(val) > -1 
           || client.address_1.toLowerCase().indexOf(val) > -1 
-          || client.address_2.toLowerCase().indexOf(val) > -1 
-          || client.address_3.toLowerCase().indexOf(val) > -1 
-          || client.city.toLowerCase().indexOf(val) > -1
+          || address_2.indexOf(val) > -1 
+          || address_3.indexOf(val) > -1 
+          || city.indexOf(val) > -1
           || client.postcode.toLowerCase().indexOf(val) > -1
           || client.country.toLowerCase().indexOf(val) > -1 
       });
